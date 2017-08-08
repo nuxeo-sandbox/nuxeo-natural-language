@@ -14,8 +14,13 @@
   <description/>
   <packaging>pom</packaging>
 
+  <properties>
+    <google.natural.language.version>0.21.1-beta</google.natural.language.version>
+  </properties>
+
   <modules>
     <module>nuxeo-natural-language-core</module>
+    <module>nuxeo-natural-language-google</module>
     <module>nuxeo-natural-language-package</module>
   </modules>
   <scm/>

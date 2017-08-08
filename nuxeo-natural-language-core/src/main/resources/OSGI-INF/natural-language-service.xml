@@ -1,27 +1,27 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.natural.language.core.service" version="1.0">
+<component name="org.nuxeo.natural.language.service" version="1.0">
 
   <documentation>
     A service that performs Natural Language tasks like text analysis, sentiment extraction, ...
   </documentation>
 
-  <implementation class="org.nuxeo.natural.language.core.service.NaturalLanguageImpl" />
+  <implementation class="org.nuxeo.natural.language.service.NaturalLanguageImpl" />
 
   <service>
-    <provide interface="org.nuxeo.natural.language.core.service.NaturalLanguage" />
+    <provide interface="org.nuxeo.natural.language.service.NaturalLanguage" />
   </service>
 
   <extension-point name="configuration">
     <documentation>Default behavior of the service</documentation>
-    <object class="org.nuxeo.natural.language.core.service.NaturalLanguageDescriptor" />
+    <object class="org.nuxeo.natural.language.service.NaturalLanguageDescriptor" />
   </extension-point>
 
   <extension-point name="provider">
     <documentation>Used to define a new Natural Language service provider</documentation>
-    <object class="org.nuxeo.natural.language.core.service.NaturalLanguageProviderDescriptor" />
+    <object class="org.nuxeo.natural.language.service.NaturalLanguageProviderDescriptor" />
   </extension-point>
 
-  <extension target="org.nuxeo.natural.language.core.service" point="configuration">
+  <extension target="org.nuxeo.natural.language.service" point="configuration">
     <configuration>
       <performNaturalLanguageChainName>javascript.NaturalLanguageDefaultMapper</performNaturalLanguageChainName>
       <defaultProviderName>${org.nuxeo.natural.language.default.provider:=}</defaultProviderName>

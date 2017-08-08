@@ -1,1 +1,1 @@
-package nuxeo.natural.language;
+package org.nuxeo.natural.language;

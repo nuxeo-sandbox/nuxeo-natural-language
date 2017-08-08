@@ -1,0 +1,80 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>nuxeo.natural.language</groupId>
+    <artifactId>nuxeo-natural-language-parent</artifactId>
+    <version>9.2-SNAPSHOT</version>
+  </parent>
+  <artifactId>nuxeo-natural-language-google</artifactId>
+  <name>Nuxeo Natural Language Google</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>nuxeo.natural.language</groupId>
+      <artifactId>nuxeo-natural-language-core</artifactId>
+    </dependency>
+
+    <!-- [START Google dependencies] -->
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-language</artifactId>
+      <version>${google.natural.language.version}</version>
+    </dependency>
+    <!--
+    <dependency>
+      <groupId>com.google.api-client</groupId>
+      <artifactId>google-api-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.apis</groupId>
+      <artifactId>google-api-services-language</artifactId>
+      <version>${google.natural.language.version}</version>
+    </dependency>
+    -->
+    <!-- FIXME: remove af≤ter client fixes depenency issue -->
+    <!--
+    <dependency>
+      <groupId>com.google.auth</groupId>
+      <artifactId>google-auth-library-oauth2-http</artifactId>
+      <version>0.7.1</version>
+    </dependency>
+    -->
+    <!-- [END Google dependencies] -->
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <org.nuxeo.natural.language.test.credential.key>${org.nuxeo.natural.language.test.credential.key}</org.nuxeo.natural.language.test.credential.key>
+            <org.nuxeo.natural.language.test.credential.file>${org.nuxeo.natural.language.test.credential.file}</org.nuxeo.natural.language.test.credential.file>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

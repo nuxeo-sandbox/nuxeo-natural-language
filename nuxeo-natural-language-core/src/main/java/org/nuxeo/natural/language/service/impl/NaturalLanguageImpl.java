@@ -16,7 +16,7 @@
  * Contributors:
  *     Thibaud ARguillere
  */
-package org.nuxeo.natural.language.service;
+package org.nuxeo.natural.language.service.impl;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -29,6 +29,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.natural.language.service.api.NaturalLanguage;
+import org.nuxeo.natural.language.service.api.NaturalLanguageFeature;
+import org.nuxeo.natural.language.service.api.NaturalLanguageProvider;
+import org.nuxeo.natural.language.service.api.NaturalLanguageResponse;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -103,19 +107,43 @@ public class NaturalLanguageImpl extends DefaultComponent implements NaturalLang
     }
 
     @Override
-    public NaturalLanguageResponse processBlob(Blob blob, List<NaturalLanguageFeature> features, int maxResults)
+    public NaturalLanguageResponse processText(String text, List<NaturalLanguageFeature> features)
             throws IOException, GeneralSecurityException, IllegalStateException {
-        return processBlob(config.getDefaultProviderName(), blob, features, maxResults);
+        return processText(config.getDefaultProviderName(), text, features);
     }
 
     @Override
-    public List<NaturalLanguageResponse> processBlobs(List<Blob> blobs, List<NaturalLanguageFeature> features, int maxResults)
+    public NaturalLanguageResponse processText(String providerName, String text, List<NaturalLanguageFeature> features)
             throws IOException, GeneralSecurityException, IllegalStateException {
-        return processBlobs(config.getDefaultProviderName(), blobs, features, maxResults);
+
+    	if (text == null) {
+            throw new IllegalArgumentException("Input text cannot be null");
+        } else if (features == null || features.size() == 0) {
+            throw new IllegalArgumentException("The feature list cannot be empty or null");
+        }
+
+    	NaturalLanguageProvider provider = providers.get(providerName);
+    	if (provider == null) {
+            throw new NuxeoException("Unknown provider: " + providerName);
+        }
+
+    	return provider.processText(text, features);
     }
 
     @Override
-    public NaturalLanguageResponse processBlob(String providerName, Blob blob, List<NaturalLanguageFeature> features, int maxResults)
+    public NaturalLanguageResponse processBlob(Blob blob, List<NaturalLanguageFeature> features)
+            throws IOException, GeneralSecurityException, IllegalStateException {
+        return processBlob(config.getDefaultProviderName(), blob, features);
+    }
+
+    @Override
+    public List<NaturalLanguageResponse> processBlobs(List<Blob> blobs, List<NaturalLanguageFeature> features)
+            throws IOException, GeneralSecurityException, IllegalStateException {
+        return processBlobs(config.getDefaultProviderName(), blobs, features);
+    }
+
+    @Override
+    public NaturalLanguageResponse processBlob(String providerName, Blob blob, List<NaturalLanguageFeature> features)
             throws IOException, GeneralSecurityException {
         if (blob == null) {
             throw new IllegalArgumentException("Input Blob cannot be null");
@@ -123,7 +151,7 @@ public class NaturalLanguageImpl extends DefaultComponent implements NaturalLang
             throw new IllegalArgumentException("The feature list cannot be empty or null");
         }
 
-        List<NaturalLanguageResponse> results = processBlobs(providerName, Arrays.asList(blob), features, maxResults);
+        List<NaturalLanguageResponse> results = processBlobs(providerName, Arrays.asList(blob), features);
         if (results.size() > 0) {
             return results.get(0);
         } else {
@@ -133,8 +161,7 @@ public class NaturalLanguageImpl extends DefaultComponent implements NaturalLang
     }
 
     @Override
-    public List<NaturalLanguageResponse> processBlobs(String providerName, List<Blob> blobs, List<NaturalLanguageFeature> features,
-            int maxResults) throws IOException, GeneralSecurityException {
+    public List<NaturalLanguageResponse> processBlobs(String providerName, List<Blob> blobs, List<NaturalLanguageFeature> features) throws IOException, GeneralSecurityException {
         NaturalLanguageProvider provider = providers.get(providerName);
 
         if (provider == null) {
@@ -148,7 +175,7 @@ public class NaturalLanguageImpl extends DefaultComponent implements NaturalLang
         } else if (features == null || features.size() == 0) {
             throw new IllegalArgumentException("The feature list cannot be empty or null");
         }
-        return provider.processBlobs(blobs, features, maxResults);
+        return provider.processBlobs(blobs, features);
     }
 
     @Override

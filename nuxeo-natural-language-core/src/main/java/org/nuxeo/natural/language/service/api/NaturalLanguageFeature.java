@@ -17,7 +17,7 @@
  *     Michael Vachette (via nuxeo-vision)
  *     Thibaud Arguillere
  */
-package org.nuxeo.natural.language.service;
+package org.nuxeo.natural.language.service.api;
 
 public enum NaturalLanguageFeature {
 

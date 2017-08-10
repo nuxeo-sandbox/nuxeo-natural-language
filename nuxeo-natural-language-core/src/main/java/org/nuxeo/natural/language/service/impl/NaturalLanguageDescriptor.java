@@ -17,39 +17,25 @@
  *     Michael Vachette (via nuxeo-vision)
  *     Thibaud Arguillere
  */
-package org.nuxeo.natural.language.service;
-
-import java.util.HashMap;
-import java.util.Map;
+package org.nuxeo.natural.language.service.impl;
 
 import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
-/**
- * @since 9.2
- */
-@XObject("provider")
-public class NaturalLanguageProviderDescriptor {
+@XObject("configuration")
+public class NaturalLanguageDescriptor {
 
-    @XNode("@name")
-    protected String providerName;
+    @XNode("performNaturalLanguageChainName")
+    protected String naturalLanguageMapperChainName = "javascript.NaturalLanguageDefaultMapper";
 
-    @XNode("@class")
-    protected Class<?> klass;
+    @XNode("defaultProviderName")
+    protected String defaultProviderName;
 
-    @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> parameters = new HashMap<>();
-
-    public Class<?> getKlass() {
-        return klass;
+    public String getMapperChainName() {
+        return naturalLanguageMapperChainName;
     }
 
-    public String getProviderName() {
-        return providerName;
-    }
-
-    public Map<String, String> getParameters() {
-        return parameters;
+    public String getDefaultProviderName() {
+        return defaultProviderName;
     }
 }

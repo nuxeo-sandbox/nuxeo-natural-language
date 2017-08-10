@@ -2,7 +2,7 @@
 <component name="org.nuxeo.natural.language.google.provider" version="1.0">
 
   <extension point="provider" target="org.nuxeo.natural.language.service">
-    <provider class="org.nuxeo.natural.language.google.GoogleNAturalLanguageProvider" name="google">
+    <provider class="org.nuxeo.natural.language.google.GoogleNaturalLanguageProvider" name="google">
       <parameters>
         <parameter name="appName">Nuxeo</parameter>
         <parameter name="credentialFilePath">${org.nuxeo.natural.language.google.credential:=}</parameter>

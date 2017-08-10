@@ -5,20 +5,20 @@
     A service that performs Natural Language tasks like text analysis, sentiment extraction, ...
   </documentation>
 
-  <implementation class="org.nuxeo.natural.language.service.NaturalLanguageImpl" />
+  <implementation class="org.nuxeo.natural.language.service.impl.NaturalLanguageImpl" />
 
   <service>
-    <provide interface="org.nuxeo.natural.language.service.NaturalLanguage" />
+    <provide interface="org.nuxeo.natural.language.service.api.NaturalLanguage" />
   </service>
 
   <extension-point name="configuration">
     <documentation>Default behavior of the service</documentation>
-    <object class="org.nuxeo.natural.language.service.NaturalLanguageDescriptor" />
+    <object class="org.nuxeo.natural.language.service.api.NaturalLanguageDescriptor" />
   </extension-point>
 
   <extension-point name="provider">
     <documentation>Used to define a new Natural Language service provider</documentation>
-    <object class="org.nuxeo.natural.language.service.NaturalLanguageProviderDescriptor" />
+    <object class="org.nuxeo.natural.language.service.impl.NaturalLanguageProviderDescriptor" />
   </extension-point>
 
   <extension target="org.nuxeo.natural.language.service" point="configuration">

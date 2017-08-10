@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
  * Contributors:
  *     Thibaud Arguillere
  */
-package org.nuxeo.natural.language.service;
+package org.nuxeo.natural.language.service.impl;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,29 +26,43 @@ import java.util.Map;
  * organization, or location. The API associates information, such as salience
  * and mentions, with entities.
  *
- * Notice: This interface is based on the {@link Entity} class of Google Cloud
+ * Notice: This class is based on the {@link Entity} class of Google Cloud
  * Natural Language API
  *
  *
  * @since 9.2
  */
-public interface NaturalLanguageEntity {
+public class NaturalLanguageEntity {
 
-    /**
-     * The representative name for the entity.
-     *
-     * @return value or {@code null} for none
-     */
-    public String getName();
+	protected String name;
 
-    /**
+	protected String type;
+
+	protected float salience;
+
+	protected Map<String, String> metadata;
+
+	public NaturalLanguageEntity(String name, String type, float salience, Map<String, String> metadata) {
+		this.name = name;
+		this.type = type;
+		this.salience = salience;
+		this.metadata = metadata;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	/**
      * The entity type.
      *
      * @return value or {@code null} for none
      */
-    public String getType();
+	public String getType() {
+		return type;
+	}
 
-    /**
+	/**
      * The salience score associated with the entity in the [0, 1.0] range.
      *
      * The salience score for an entity provides information about the
@@ -57,9 +72,11 @@ public interface NaturalLanguageEntity {
      *
      * @return value or {@code null} for none
      */
-    public float getSalience();
+	public float getSalience() {
+		return salience;
+	}
 
-    /**
+	/**
      * Metadata associated with the entity.
      *
      * Currently, only Wikipedia URLs are provided, if available. The associated
@@ -67,17 +84,39 @@ public interface NaturalLanguageEntity {
      *
      * @return value or {@code null} for none
      */
-    public Map<String, String> getMetadata();
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
 
-    /**
+	/**
+	 * Static utility searching for the first entity with this name
+	 *
+	 * @param entities
+	 * @param name
+	 * @return the found entity or null
+	 */
+	static public NaturalLanguageEntity findEntityForName(List<NaturalLanguageEntity> entities, String name) {
+
+		for(NaturalLanguageEntity entity : entities) {
+			if(entity.getName().equals(name)) {
+				return entity;
+			}
+		}
+
+		return null;
+	}
+
+	/**
      * Utility method to output an entity
      *
      * @param e
      * @return the string representation
      */
-    public static String toString(NaturalLanguageEntity e) {
-        return "" + e.getName() + "\n" + e.getType() + "\n" + e.getSalience()
-                + "\n" + e.getMetadata();
+    @Override
+	public  String toString() {
+        return "" + getName() + "\n" + getType() + "\n" + getSalience()
+                + "\n" + getMetadata();
     }
+
 
 }

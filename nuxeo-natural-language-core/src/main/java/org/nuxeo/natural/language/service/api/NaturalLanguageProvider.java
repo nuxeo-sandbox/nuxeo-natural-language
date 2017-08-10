@@ -19,7 +19,7 @@
  *     Thibaud Arguillere
  */
 
-package org.nuxeo.natural.language.service;
+package org.nuxeo.natural.language.service.api;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -39,7 +39,16 @@ public interface NaturalLanguageProvider {
      * @param maxResults the maximum number of results per feature
      * @return a {@link NaturalLanguageResponse} object
      */
-    List<NaturalLanguageResponse> processBlobs(List<Blob> blobs, List<NaturalLanguageFeature> features, int maxResults)
+    List<NaturalLanguageResponse> processBlobs(List<Blob> blobs, List<NaturalLanguageFeature> features)
+            throws IOException, GeneralSecurityException, IllegalStateException;
+
+    /**
+     *
+     * @param text to anayze
+     * @param features to request from the provider
+     * @return a {@link NaturalLanguageResponse} object
+     */
+    NaturalLanguageResponse processText(String text , List<NaturalLanguageFeature> features)
             throws IOException, GeneralSecurityException, IllegalStateException;
 
     /**
@@ -49,7 +58,7 @@ public interface NaturalLanguageProvider {
 
     /**
      * Verifies that the blobs size and format are supported by the provider
-     * 
+     *
      * @param blobs the blobs to pass to the API
      * @return a {@link NaturalLanguageResponse} object
      */

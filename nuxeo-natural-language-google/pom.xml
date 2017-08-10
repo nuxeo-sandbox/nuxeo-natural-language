@@ -29,11 +29,12 @@
       <artifactId>google-cloud-language</artifactId>
       <version>${google.natural.language.version}</version>
     </dependency>
-    <!--
+    
     <dependency>
       <groupId>com.google.api-client</groupId>
       <artifactId>google-api-client</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>

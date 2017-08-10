@@ -22,57 +22,166 @@ package org.nuxeo.natural.language.google;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.google.api.gax.core.CredentialsProvider;
+import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.language.v1.AnnotateTextRequest;
+import com.google.cloud.language.v1.AnnotateTextRequest.Features;
+import com.google.cloud.language.v1.AnnotateTextResponse;
+import com.google.cloud.language.v1.Document;
+import com.google.cloud.language.v1.Document.Type;
+import com.google.cloud.language.v1.LanguageServiceClient;
+import com.google.cloud.language.v1.LanguageServiceSettings;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
-import org.nuxeo.natural.language.service.NaturalLanguageFeature;
-import org.nuxeo.natural.language.service.NaturalLanguageProvider;
-import org.nuxeo.natural.language.service.NaturalLanguageResponse;
+import org.nuxeo.natural.language.service.api.NaturalLanguageFeature;
+import org.nuxeo.natural.language.service.api.NaturalLanguageProvider;
+import org.nuxeo.natural.language.service.api.NaturalLanguageResponse;
 
 public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 
-    public static final String APP_NAME_PARAM = "appName";
+	public static final String APP_NAME_PARAM = "appName";
 
-    public static final String API_KEY_PARAM = "apiKey";
+	public static final String API_KEY_PARAM = "apiKey";
 
-    public static final String CREDENTIAL_PATH_PARAM = "credentialFilePath";
+	public static final String CREDENTIAL_PATH_PARAM = "credentialFilePath";
 
-    protected Map<String, String> params;
+	protected Map<String, String> params;
 
-    public GoogleNaturalLanguageProvider(Map<String, String> parameters) {
-        this.params = parameters;
-    }
+	protected LanguageServiceClient languageServiceClient = null;
 
-    /**
-     * volatile on purpose to allow for the double-checked locking idiom
-     */
-    //protected volatile com.google.api.services.vision.v1.Vision visionClient;
+	public GoogleNaturalLanguageProvider(Map<String, String> parameters) {
+		params = parameters;
+	}
 
-    @Override
-    public List<NaturalLanguageResponse> processBlobs(List<Blob> blobs, List<NaturalLanguageFeature> features, int maxResults)
-            throws IOException, GeneralSecurityException, IllegalStateException {
-        return null;
-    }
+	protected LanguageServiceClient getLanguageServiceClient() throws IOException {
 
-    @Override
-    public List<NaturalLanguageFeature> getSupportedFeatures() {
-        return null;
-    }
+		if (languageServiceClient == null) {
+			synchronized (this) {
+				if (languageServiceClient == null) {
 
-    @Override
-    public boolean checkBlobs(List<Blob> blobs) throws IOException {
-        return false;
-    }
+					if (usesServiceAccount()) {
+						final LanguageServiceSettings languageServiceSettings;
+						try (InputStream is = new FileInputStream(new File(getCredentialFilePath()))) {
+							final GoogleCredentials myCredentials = GoogleCredentials.fromStream(is)
+									.createScoped(LanguageServiceSettings.getDefaultServiceScopes());
 
-    @Override
-    public Object getNativeClient() {
-        return null;
-    }
+							final CredentialsProvider credentialsProvider = FixedCredentialsProvider
+									.create(myCredentials);
+
+							languageServiceSettings = LanguageServiceSettings.newBuilder()
+									.setCredentialsProvider(credentialsProvider)
+									.setTransportProvider(LanguageServiceSettings.defaultTransportProvider()).build();
+
+							languageServiceClient = LanguageServiceClient.create(languageServiceSettings);
+
+						} catch (IOException ioe) {
+							throw new NuxeoException(ioe);
+						}
+					} else {
+						try {
+							languageServiceClient = LanguageServiceClient.create();
+						} catch (IOException ioe) {
+							throw new NuxeoException(ioe);
+						}
+					}
+				}
+			}
+		}
+
+		return languageServiceClient;
+	}
+
+	@Override
+	public NaturalLanguageResponse processText(String str, List<NaturalLanguageFeature> features) throws IOException {
+
+		LanguageServiceClient language = getLanguageServiceClient();
+
+		AnnotateTextRequest request;
+		AnnotateTextRequest.Builder requestBuilder = AnnotateTextRequest.newBuilder();
+
+		Document.Builder docBuilder = Document.newBuilder();
+		docBuilder.setContent(str).setType(Type.PLAIN_TEXT);
+		requestBuilder.setDocument(docBuilder.build());
+
+		boolean doEntities = features.contains(NaturalLanguageFeature.ENTITIES);
+		boolean doSentiment = features.contains(NaturalLanguageFeature.DOCUMENT_SENTIMENT);
+		boolean doSyntax = features.contains(NaturalLanguageFeature.SYNTAX);
+		Features requestFeatures = Features.newBuilder().setExtractDocumentSentiment(doSentiment)
+				.setExtractEntities(doEntities).setExtractSyntax(doSyntax).build();
+		requestBuilder.setFeatures(requestFeatures);
+
+		request = requestBuilder.build();
+		AnnotateTextResponse response;
+		response = language.annotateText(request);
+
+		GoogleNaturalLanguageResponse gnlr = new GoogleNaturalLanguageResponse(response);
+
+		return gnlr;
+	}
+
+	@Override
+	public List<NaturalLanguageResponse> processBlobs(List<Blob> blobs, List<NaturalLanguageFeature> features)
+			throws IOException, GeneralSecurityException, IllegalStateException {
+		return null;
+	}
+
+	@Override
+	public List<NaturalLanguageFeature> getSupportedFeatures() {
+		return null;
+	}
+
+	@Override
+	public boolean checkBlobs(List<Blob> blobs) throws IOException {
+		return false;
+	}
+
+	@Override
+	public LanguageServiceClient getNativeClient() {
+		try {
+			return getLanguageServiceClient();
+		} catch (IOException e) {
+			throw new NuxeoException(e);
+		}
+	}
+
+	protected String getCredentialFilePath() {
+		return params.get(CREDENTIAL_PATH_PARAM);
+	}
+
+	protected String getApiKey() {
+		return params.get(API_KEY_PARAM);
+	}
+
+	protected String getAppName() {
+		return params.get(APP_NAME_PARAM);
+	}
+
+	protected boolean usesServiceAccount() {
+		String path = getCredentialFilePath();
+		return StringUtils.isNotEmpty(path);
+	}
+
+	protected boolean usesApiKey() {
+		String key = getApiKey();
+		return StringUtils.isNotEmpty(key);
+	}
+
+	/**
+	 * Use by unit test
+	 *
+	 * @param value
+	 * @since 9.2
+	 */
+	public void setCredentialFilePath(String value) {
+		params.put(CREDENTIAL_PATH_PARAM, value);
+	}
 
 }

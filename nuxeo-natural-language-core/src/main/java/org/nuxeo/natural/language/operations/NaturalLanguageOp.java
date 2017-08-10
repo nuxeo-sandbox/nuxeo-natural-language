@@ -36,9 +36,9 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.natural.language.service.NaturalLanguage;
-import org.nuxeo.natural.language.service.NaturalLanguageFeature;
-import org.nuxeo.natural.language.service.NaturalLanguageResponse;
+import org.nuxeo.natural.language.service.api.NaturalLanguage;
+import org.nuxeo.natural.language.service.api.NaturalLanguageFeature;
+import org.nuxeo.natural.language.service.api.NaturalLanguageResponse;
 
 /**
  * WHEN CALLED WITH STRING, return the result directly
@@ -67,9 +67,6 @@ public class NaturalLanguageOp {
             + "The output variable is a list of NaturalLanguageResponse objects. ", required = true)
     protected String outputVariable;
 
-    @Param(name = "maxResults", description = "The maximum number of results per feature", required = true)
-    protected int maxResults;
-
     @OperationMethod
     public Blob run(Blob blob) {
         if (blob == null) {
@@ -92,9 +89,9 @@ public class NaturalLanguageOp {
 
         try {
             if (StringUtils.isEmpty(provider)) {
-                results = naturalLanguageService.processBlobs(blobs, featureList, maxResults);
+                results = naturalLanguageService.processBlobs(blobs, featureList);
             } else {
-                results = naturalLanguageService.processBlobs(provider, blobs, featureList, maxResults);
+                results = naturalLanguageService.processBlobs(provider, blobs, featureList);
             }
             ctx.put(outputVariable, results);
         } catch (IOException | GeneralSecurityException e) {

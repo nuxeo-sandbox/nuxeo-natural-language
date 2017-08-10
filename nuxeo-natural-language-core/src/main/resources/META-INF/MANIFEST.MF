@@ -5,7 +5,7 @@ Bundle-Vendor: nuxeo.natural.language
 Bundle-Version: 1.0.0
 Bundle-Name: nuxeo-natural-language-core
 Bundle-ManifestVersion: 2
-Bundle-SymbolicName: nuxeo.natural.language.nuxeo-natural-language-core;singleton=true
+Bundle-SymbolicName: nuxeo-natural-language-core;singleton=true
 Nuxeo-Component: OSGI-INF/natural-language-service.xml,
  OSGI-INF/operations-contrib.xml,
  OSGI-INF/default-chains-contrib.xml

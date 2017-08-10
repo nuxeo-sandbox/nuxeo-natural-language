@@ -19,23 +19,21 @@
  */
 package org.nuxeo.natural.language.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.natural.language.service.api.NaturalLanguage;
 
 @XObject("configuration")
 public class NaturalLanguageDescriptor {
 
-    @XNode("performNaturalLanguageChainName")
-    protected String naturalLanguageMapperChainName = "javascript.NaturalLanguageDefaultMapper";
-
     @XNode("defaultProviderName")
     protected String defaultProviderName;
 
-    public String getMapperChainName() {
-        return naturalLanguageMapperChainName;
-    }
-
     public String getDefaultProviderName() {
+    	if(StringUtils.isBlank(defaultProviderName)) {
+    		return NaturalLanguage.DEFAULT_PROVIDER_NAME;
+    	}
         return defaultProviderName;
     }
 }

@@ -35,6 +35,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface NaturalLanguage {
 
+	public static String DEFAULT_PROVIDER_NAME = "google";
+
 	/**
 	 *
 	 * @param provider

@@ -5,11 +5,11 @@
     A service that performs Natural Language tasks like text analysis, sentiment extraction, ...
   </documentation>
 
-  <implementation class="org.nuxeo.natural.language.service.impl.NaturalLanguageImpl" />
-
   <service>
     <provide interface="org.nuxeo.natural.language.service.api.NaturalLanguage" />
   </service>
+
+  <implementation class="org.nuxeo.natural.language.service.impl.NaturalLanguageImpl" />
 
   <extension-point name="configuration">
     <documentation>Default behavior of the service</documentation>
@@ -23,7 +23,6 @@
 
   <extension target="org.nuxeo.natural.language.service" point="configuration">
     <configuration>
-      <performNaturalLanguageChainName>javascript.NaturalLanguageDefaultMapper</performNaturalLanguageChainName>
       <defaultProviderName>${org.nuxeo.natural.language.default.provider:=}</defaultProviderName>
     </configuration>
   </extension>

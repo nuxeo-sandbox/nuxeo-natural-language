@@ -27,6 +27,7 @@ import org.nuxeo.natural.language.service.impl.NaturalLanguageToken;
 
 import com.google.cloud.language.v1.AnnotateTextResponse;
 import com.google.cloud.language.v1.Entity;
+import com.google.cloud.language.v1.EntityMention;
 import com.google.cloud.language.v1.PartOfSpeech;
 import com.google.cloud.language.v1.Sentence;
 import com.google.cloud.language.v1.Sentiment;
@@ -111,6 +112,9 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 			if (googleSentences != null) {
 				sentences = new ArrayList<String>();
 				for (Sentence oneSentence : googleSentences) {
+					Sentiment sentiment = oneSentence.getSentiment();
+					sentiment.getMagnitude();
+					sentiment.getScore();
 					sentences.add(oneSentence.getText().getContent());
 				}
 			}
@@ -131,12 +135,22 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 				NaturalLanguageEntity entity;
 				entities = new ArrayList<NaturalLanguageEntity>();
 				for (Entity googleEntity : googleEntities) {
+					ArrayList<String> mentions = new ArrayList<String>();
+					List<EntityMention> googleMentions = googleEntity.getMentionsList();
+					for (EntityMention googleMention : googleMentions) {
+						mentions.add(googleMention.getText().getContent());
+						// googleMention.getType().name();
+						// TYPE_UNKNOWN
+						// PROPER
+						// COMMON
+						// UNRECOGNIZED
+					}
 
 					Entity.Type entityType = googleEntity.getType();
 					String typeName = entityType == null ? Entity.Type.UNKNOWN.name() : entityType.name();
 
 					entity = new NaturalLanguageEntity(googleEntity.getName(), typeName, googleEntity.getSalience(),
-							googleEntity.getMetadataMap());
+							mentions, googleEntity.getMetadataMap());
 					entities.add(entity);
 				}
 

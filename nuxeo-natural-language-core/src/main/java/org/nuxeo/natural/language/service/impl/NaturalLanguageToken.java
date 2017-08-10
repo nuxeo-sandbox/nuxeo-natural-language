@@ -25,7 +25,8 @@ import java.util.Map;
  * Represents the smallest syntactic building block of the text.
  *
  * Notice: This class is based on the {@link Entity} class of Google Cloud
- * Natural Language API.
+ * Natural Language API. See
+ * https://cloud.google.com/natural-language/docs/basics#syntactic_analysis_responses
  *
  * @since 9.2
  */
@@ -261,7 +262,10 @@ public class NaturalLanguageToken {
 	}
 
 	/**
-	 * [Lemma](https://en.wikipedia.org/wiki/Lemma_(morphology)) of the token.
+	 * The "root" word upon which this word is based, which allows you to
+	 * canonicalize word usage within your text. For example, the words "write",
+	 * "writing", "wrote" and "written" all are based on the same lemma
+	 * ("write")
 	 *
 	 * @return value or {@code null} for none
 	 */

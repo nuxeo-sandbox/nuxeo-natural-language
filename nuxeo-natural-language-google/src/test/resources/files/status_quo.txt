@@ -1,4 +1,4 @@
-FROM WIKIPEDIA as of 2018-08-09
+FROM WIKIPEDIA as of 2018-08-09. This text has 9 sentences, including this line.
 
 Status Quo are an English rock band who play a brand of boogie rock. The group originated in The Spectres, founded by schoolboys Francis Rossi and Alan Lancaster in 1962. After a number of lineup changes, which included the introduction of Rick Parfitt in 1967, the band became The Status Quo in 1967 and Status Quo in 1969.
 

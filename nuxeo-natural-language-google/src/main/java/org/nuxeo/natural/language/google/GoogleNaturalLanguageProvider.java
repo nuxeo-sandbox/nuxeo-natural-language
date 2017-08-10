@@ -40,7 +40,7 @@ import com.google.cloud.language.v1.LanguageServiceSettings;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
-
+import org.nuxeo.natural.language.service.api.NaturalLanguageEncoding;
 import org.nuxeo.natural.language.service.api.NaturalLanguageFeature;
 import org.nuxeo.natural.language.service.api.NaturalLanguageProvider;
 import org.nuxeo.natural.language.service.api.NaturalLanguageResponse;
@@ -100,7 +100,7 @@ public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 	}
 
 	@Override
-	public NaturalLanguageResponse processText(String str, List<NaturalLanguageFeature> features) throws IOException {
+	public NaturalLanguageResponse processText(String text, List<NaturalLanguageFeature> features, NaturalLanguageEncoding encoding) throws IOException {
 
 		LanguageServiceClient language = getLanguageServiceClient();
 
@@ -108,14 +108,18 @@ public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 		AnnotateTextRequest.Builder requestBuilder = AnnotateTextRequest.newBuilder();
 
 		Document.Builder docBuilder = Document.newBuilder();
-		docBuilder.setContent(str).setType(Type.PLAIN_TEXT);
+		docBuilder.setContent(text).setType(Type.PLAIN_TEXT);
 		requestBuilder.setDocument(docBuilder.build());
+		if(encoding != null) {
+			requestBuilder.setEncodingTypeValue(encoding.getNumber());
+		}
 
 		boolean doEntities = features.contains(NaturalLanguageFeature.ENTITIES);
 		boolean doSentiment = features.contains(NaturalLanguageFeature.DOCUMENT_SENTIMENT);
 		boolean doSyntax = features.contains(NaturalLanguageFeature.SYNTAX);
 		Features requestFeatures = Features.newBuilder().setExtractDocumentSentiment(doSentiment)
 				.setExtractEntities(doEntities).setExtractSyntax(doSyntax).build();
+
 		requestBuilder.setFeatures(requestFeatures);
 
 		request = requestBuilder.build();
@@ -128,19 +132,8 @@ public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 	}
 
 	@Override
-	public List<NaturalLanguageResponse> processBlobs(List<Blob> blobs, List<NaturalLanguageFeature> features)
-			throws IOException, GeneralSecurityException, IllegalStateException {
-		return null;
-	}
-
-	@Override
 	public List<NaturalLanguageFeature> getSupportedFeatures() {
 		return null;
-	}
-
-	@Override
-	public boolean checkBlobs(List<Blob> blobs) throws IOException {
-		return false;
 	}
 
 	@Override

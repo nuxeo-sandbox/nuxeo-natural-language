@@ -173,7 +173,8 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 				NaturalLanguageToken token;
 				tokens = new ArrayList<NaturalLanguageToken>();
 				for (Token googleToken : googleTokens) {
-					String text = googleToken.getText().toString();
+					String text = googleToken.getText().getContent(); // toString();
+					int beginOffset = googleToken.getText().getBeginOffset();
 					String lemma = googleToken.getLemma();
 
 					PartOfSpeech partOfSpeech = googleToken.getPartOfSpeech();
@@ -186,8 +187,8 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 					String aspect = partOfSpeech.getAspect().name();
 					String theCase = partOfSpeech.getCase().name();
 
-					token = new NaturalLanguageToken(text, tagName, lemma, gender, mood, person, proper, form, aspect,
-							theCase);
+					token = new NaturalLanguageToken(text, beginOffset, tagName, lemma, gender, mood, person, proper,
+							form, aspect, theCase);
 					tokens.add(token);
 
 				}

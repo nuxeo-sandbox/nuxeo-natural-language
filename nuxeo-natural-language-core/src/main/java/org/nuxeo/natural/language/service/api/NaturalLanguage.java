@@ -25,34 +25,42 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * A service that performs Natural Language tasks like text analysis, sentiment
  * extraction, ...
+ *
+ * @since 9.2
  */
 public interface NaturalLanguage {
-
-	String EVENT_NATURAL_LANGUAGE_PROCESSING_DONE = "naturalLanguageProcessingDone";
-
-	/**
-	 * @param blob
-	 *            the text blob
-	 * @param features
-	 *            the feature to request from the service
-	 * @return a {@link NaturalLanguageResponse} object
-	 * @since 9.2
-	 */
-	NaturalLanguageResponse processBlob(Blob blob, List<NaturalLanguageFeature> features)
-			throws IOException, GeneralSecurityException;
 
 	/**
 	 *
 	 * @param provider
-	 *            the provider to use
-	 * @param blob
-	 *            the text blob
+	 *            Provider to use. Can be {@code null} (using default provider
+	 *            then)
+	 * @param text
+	 *            Text to analyze
 	 * @param features
-	 *            the feature to request from the service
+	 *            Feature to request from the service
+	 * @param encoding
+	 *            Encoding to use. Can be {@code null}
+	 * @return a {@link NaturalLanguageResponse} object
+	 * @since 9.2
+	 */
+	NaturalLanguageResponse processText(String providerName, String text, List<NaturalLanguageFeature> features,
+			NaturalLanguageEncoding encoding) throws IOException, GeneralSecurityException, IllegalStateException;
+
+	/**
+	 *
+	 * @param provider
+	 *            Provider to use. Can be {@code null} (using default provider
+	 *            then)
+	 * @param blob
+	 *            Raw text will be extracted from this blob
+	 * @param features
+	 *            Features to request from the service
 	 * @return a {@link NaturalLanguageResponse} object
 	 * @since 9.2
 	 */
@@ -60,68 +68,33 @@ public interface NaturalLanguage {
 			throws IOException, GeneralSecurityException;
 
 	/**
-	 * @param blobs
-	 *            a list of text blobs
-	 * @param features
-	 *            the feature to request from the service
-	 * @return a list of {@link NaturalLanguageResponse} object
-	 */
-	List<NaturalLanguageResponse> processBlobs(List<Blob> blobs, List<NaturalLanguageFeature> features)
-			throws IOException, GeneralSecurityException;
-
-	/**
 	 *
 	 * @param provider
-	 *            the provider to use
-	 * @param blobs
-	 *            a list of text blobs
+	 *            Provider to use. Can be {@code null} (using default provider
+	 *            then)
+	 * @param doc
+	 *            The document containing the blob to analyze
+	 * @param xpath
+	 *            The xpath where to find the blob (null or empty: uses
+	 *            file:content)
 	 * @param features
-	 *            the feature to request from the service
-	 * @return a list of {@link NaturalLanguageResponse} object
-	 * @since 9.2
-	 */
-	List<NaturalLanguageResponse> processBlobs(String provider, List<Blob> blobs, List<NaturalLanguageFeature> features)
-			throws IOException, GeneralSecurityException;
-
-	/**
-	 *
-	 * @param text
-	 *            The text to analyze
-	 * @param features
-	 *            the feature to request from the service
+	 *            Features to request from the service
 	 * @return a {@link NaturalLanguageResponse} object
 	 * @since 9.2
 	 */
-	NaturalLanguageResponse processText(String text, List<NaturalLanguageFeature> features)
-			throws IOException, GeneralSecurityException, IllegalStateException;
+	NaturalLanguageResponse processDocument(String providerName, DocumentModel doc, String xpath,
+			List<NaturalLanguageFeature> features) throws IOException, GeneralSecurityException;
 
 	/**
-	 *
-	 * @param provider
-	 *            the provider to use
-	 * @param text
-	 *            The text to analyze
-	 * @param features
-	 *            the feature to request from the service
-	 * @return a {@link NaturalLanguageResponse} object
+	 * @return The name of default provider or {@code null} is not found
 	 * @since 9.2
 	 */
-	NaturalLanguageResponse processText(String providerName, String text, List<NaturalLanguageFeature> features)
-			throws IOException, GeneralSecurityException, IllegalStateException;
+	String getDefaultProviderName();
 
 	/**
-	 * @return The name of the automation name to use for Pictures
-	 */
-	String getMapperChainName();
-
-	/**
-	 * @return The name of default provider
-	 * @since 9.2
-	 */
-	String getDefaultProvider();
-
-	/**
-	 * @return The provider object
+	 * @param name
+	 *            The name of the provider to return
+	 * @return The provider object or {@code null} is not found
 	 * @since 9.2
 	 */
 	NaturalLanguageProvider getProvider(String name);

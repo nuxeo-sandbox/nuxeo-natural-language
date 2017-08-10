@@ -34,6 +34,8 @@ public class NaturalLanguageToken {
 
 	protected String text;
 
+	protected int beginOffset;
+
 	protected String tag;
 
 	protected String lemma;
@@ -52,9 +54,10 @@ public class NaturalLanguageToken {
 
 	protected String theCase;
 
-	public NaturalLanguageToken(String text, String tag, String lemma, String gender, String mood, String person,
-			String proper, String form, String aspect, String theCase) {
+	public NaturalLanguageToken(String text, int beginOffset, String tag, String lemma, String gender, String mood,
+			String person, String proper, String form, String aspect, String theCase) {
 		this.text = text;
+		this.beginOffset = beginOffset;
 		this.tag = tag;
 		this.lemma = lemma;
 		this.gender = gender;
@@ -73,6 +76,16 @@ public class NaturalLanguageToken {
 	 */
 	public String getText() {
 		return text;
+	}
+
+	/**
+	 * The token text begin offset.
+	 *
+	 * @return value or -1 when parsing could not detect the offset (main
+	 *         reason: No encoding passed when calling the service)
+	 */
+	public int getBeginOffset() {
+		return beginOffset;
 	}
 
 	/**
@@ -281,7 +294,7 @@ public class NaturalLanguageToken {
 	 */
 	@Override
 	public String toString() {
-		return "Text:\n" + text + "\n\nTag\n" + tag + "\n\nLemma\n" + lemma + "\n\nGender\n" + gender + "\n\nmMood\n"
+		return "Text:\n" + text + "\n\nBeginOffset\n" + beginOffset + "\n\nTag\n" + tag + "\n\nLemma\n" + lemma + "\n\nGender\n" + gender + "\n\nmMood\n"
 				+ mood + "\n\nPerson\n" + person + "\n\nProper\n" + proper + "\n\nForm\n" + form + "\n\nAspect\n"
 				+ aspect + "\n\nCase\n" + theCase + "\n";
 	}
@@ -295,6 +308,7 @@ public class NaturalLanguageToken {
 	public Map<String, String> toMap() {
 		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("text", text);
+		map.put("beginOffset", "" + beginOffset);
 		map.put("tag", tag);
 		map.put("lemma", lemma);
 		map.put("gender", gender);

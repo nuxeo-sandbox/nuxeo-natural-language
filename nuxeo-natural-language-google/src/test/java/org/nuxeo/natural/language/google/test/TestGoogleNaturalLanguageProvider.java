@@ -42,9 +42,11 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.natural.language.google.GoogleNaturalLanguageProvider;
 import org.nuxeo.natural.language.service.api.NaturalLanguage;
+import org.nuxeo.natural.language.service.api.NaturalLanguageEncoding;
 import org.nuxeo.natural.language.service.api.NaturalLanguageFeature;
 import org.nuxeo.natural.language.service.api.NaturalLanguageProvider;
 import org.nuxeo.natural.language.service.api.NaturalLanguageResponse;
@@ -74,6 +76,8 @@ public class TestGoogleNaturalLanguageProvider {
 
 	protected String PDF_FR = "files/DocumentManagement-FR-2017.pdf";
 
+	protected String WORD_EN = "files/GPU.docx";
+
 	protected DocumentModel pdfEN;
 
 	protected DocumentModel pdfES;
@@ -81,6 +85,8 @@ public class TestGoogleNaturalLanguageProvider {
 	protected DocumentModel pdfJP;
 
 	protected DocumentModel pdfFR;
+
+	protected DocumentModel wordEN;
 
 	@Inject
 	CoreSession coreSession;
@@ -92,6 +98,9 @@ public class TestGoogleNaturalLanguageProvider {
 	protected ConversionService conversionService;
 
 	@Inject
+	MimetypeRegistryService mimetypeRegistryService;
+
+	@Inject
 	NaturalLanguage naturalLanguageService;
 
 	protected GoogleNaturalLanguageProvider googleNaturalLanguageProvider = null;
@@ -100,8 +109,16 @@ public class TestGoogleNaturalLanguageProvider {
 
 		File file = FileUtils.getResourceFileFromContext(filePath);
 		FileBlob fileBlob = new FileBlob(file);
-		fileBlob.setMimeType("application/pdf");
 		fileBlob.setFilename(file.getName());
+
+		String mimeType = mimetypeRegistryService.getMimetypeFromBlob(fileBlob);
+		// At runtime, importing a Word doc sets the correct mimetype. In
+		// Eclipse, running the test in debug mode, it is set to
+		// "Application/zip" (on Mac), and so, the conversion to text fails.
+		if (file.getName().indexOf(".docx") > 0 && mimeType.indexOf("/zip") > 0) {
+			mimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+		}
+		fileBlob.setMimeType(mimeType);
 
 		DocumentModel doc = coreSession.createDocumentModel(parent.getPathAsString(), file.getName(), "File");
 		doc.setPropertyValue("dc:title", file.getName());
@@ -130,6 +147,7 @@ public class TestGoogleNaturalLanguageProvider {
 		pdfES = createFileDocument(parent, PDF_ES);
 		pdfJP = createFileDocument(parent, PDF_JP);
 		pdfFR = createFileDocument(parent, PDF_FR);
+		wordEN = createFileDocument(parent, WORD_EN);
 
 		coreSession.save();
 
@@ -143,11 +161,6 @@ public class TestGoogleNaturalLanguageProvider {
 	protected String extractRawText(DocumentModel doc) throws UnsupportedEncodingException, IOException {
 
 		BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
-		//BlobHolder resultBlob = conversionService
-		//		.convert("any2text"/* FulltextExtractorWork.ANY2TEXT */, blobHolder, null);
-		//String text = new String(resultBlob.getBlob().getByteArray(), "UTF-8");
-
-		//return text;
 
 		return extractRawText(blobHolder.getBlob());
 	}
@@ -155,7 +168,7 @@ public class TestGoogleNaturalLanguageProvider {
 	protected String extractRawText(Blob blob) throws UnsupportedEncodingException, IOException {
 
 		SimpleBlobHolder blobHolder = new SimpleBlobHolder(blob);
-		BlobHolder resultBlob = conversionService.convert("any2text"/*FulltextExtractorWork.ANY2TEXT*/, blobHolder, null);
+		BlobHolder resultBlob = conversionService.convert("any2text", blobHolder, null);
 		String text = new String(resultBlob.getBlob().getByteArray(), "UTF-8");
 
 		return text;
@@ -177,31 +190,104 @@ public class TestGoogleNaturalLanguageProvider {
 
 		pdfEN.refresh();
 		text = extractRawText(pdfEN);
-		response = googleNaturalLanguageProvider.processText(text, features);
+		response = googleNaturalLanguageProvider.processText(text, features, null);
 		assertNotNull(response);
 		language = response.getLanguage();
 		assertEquals("en", language);
 
 		pdfES.refresh();
 		text = extractRawText(pdfES);
-		response = googleNaturalLanguageProvider.processText(text, features);
+		response = googleNaturalLanguageProvider.processText(text, features, null);
 		assertNotNull(response);
 		language = response.getLanguage();
 		assertEquals("es", language);
 
 		pdfJP.refresh();
 		text = extractRawText(pdfJP);
-		response = googleNaturalLanguageProvider.processText(text, features);
+		response = googleNaturalLanguageProvider.processText(text, features, null);
 		assertNotNull(response);
 		language = response.getLanguage();
 		assertEquals("ja", language);
 
 		pdfFR.refresh();
 		text = extractRawText(pdfFR);
-		response = googleNaturalLanguageProvider.processText(text, features);
+		response = googleNaturalLanguageProvider.processText(text, features, null);
 		assertNotNull(response);
 		language = response.getLanguage();
 		assertEquals("fr", language);
+
+	}
+
+	@Test
+	public void testtWordDocument() throws UnsupportedEncodingException, IOException {
+
+		String text;
+		String language;
+		NaturalLanguageResponse response;
+
+		googleNaturalLanguageProvider
+				.setCredentialFilePath("/Users/thibaud/Nuxeo-Misc/nuxeo-vision-f69dfb848a34-NATURAL-LANGUAGE.json");
+		List<NaturalLanguageFeature> features = new ArrayList<NaturalLanguageFeature>();
+		features.add(NaturalLanguageFeature.ENTITIES);
+		features.add(NaturalLanguageFeature.DOCUMENT_SENTIMENT);
+		features.add(NaturalLanguageFeature.SYNTAX);
+
+		wordEN.refresh();
+		text = extractRawText(wordEN);
+		response = googleNaturalLanguageProvider.processText(text, features, NaturalLanguageEncoding.UTF8);
+		assertNotNull(response);
+		language = response.getLanguage();
+		assertEquals("en", language);
+
+		Float magnitude = response.getSentimentMagnitude();
+		Float score = response.getSentimentScore();
+		// Useless to test a value here
+		assertNotNull(magnitude);
+		assertNotNull(score);
+
+		List<NaturalLanguageEntity> entities = response.getEntities();
+		assertNotNull(entities);
+
+		List<String> sentences = response.getSentences();
+		assertNotNull(sentences);
+
+		List<NaturalLanguageToken> tockens = response.getTokens();
+		assertNotNull(sentences);
+
+	}
+
+	@Test
+	public void testSyntax() throws UnsupportedEncodingException, IOException {
+
+		googleNaturalLanguageProvider
+				.setCredentialFilePath("/Users/thibaud/Nuxeo-Misc/nuxeo-vision-f69dfb848a34-NATURAL-LANGUAGE.json");
+		List<NaturalLanguageFeature> features = new ArrayList<NaturalLanguageFeature>();
+		features.add(NaturalLanguageFeature.SYNTAX);
+
+		pdfEN.refresh();
+		String text = extractRawText(pdfEN);
+		NaturalLanguageResponse response = googleNaturalLanguageProvider.processText(text, features,
+				NaturalLanguageEncoding.UTF8);
+		assertNotNull(response);
+
+		List<NaturalLanguageToken> tockens = response.getTokens();
+		assertNotNull(tockens);
+
+		// Just check the first 3 tokens, we know what we expect with this file
+		// First words are "Document management system". Let's check we have
+		// offsets (we passed the encoding => Google will give the offsets)
+		assertTrue(tockens.size() > 1000);
+		NaturalLanguageToken tocken = tockens.get(0);
+		assertEquals("Document", tocken.getText());
+		assertEquals(0, tocken.getBeginOffset());
+
+		tocken = tockens.get(1);
+		assertEquals("management", tocken.getText());
+		assertEquals(9, tocken.getBeginOffset());
+
+		tocken = tockens.get(2);
+		assertEquals("system", tocken.getText());
+		assertEquals(20, tocken.getBeginOffset());
 
 	}
 
@@ -238,13 +324,17 @@ public class TestGoogleNaturalLanguageProvider {
 		features.add(NaturalLanguageFeature.ENTITIES);
 		features.add(NaturalLanguageFeature.DOCUMENT_SENTIMENT);
 		// features.add(NaturalLanguageFeature.SYNTAX);
-		NaturalLanguageResponse response = googleNaturalLanguageProvider.processText(text, features);
+		NaturalLanguageResponse response = googleNaturalLanguageProvider.processText(text, features, null);
 
 		assertNotNull(response);
 		String language = response.getLanguage();
 		assertEquals("en", language);
+
 		Float magnitude = response.getSentimentMagnitude();
+		assertNotNull(magnitude);
+
 		Float score = response.getSentimentScore();
+		assertNotNull(score);
 
 		List<NaturalLanguageEntity> entities = response.getEntities();
 		assertNotNull(entities);
@@ -309,8 +399,6 @@ public class TestGoogleNaturalLanguageProvider {
 		String THE_PATH = "/Users/thibaud/Nuxeo-Misc/nuxeo-vision-f69dfb848a34-NATURAL-LANGUAGE.json";
 		params.put(GoogleNaturalLanguageProvider.CREDENTIAL_PATH_PARAM, THE_PATH);
 		googleNaturalLanguageProvider = new GoogleNaturalLanguageProvider(params);
-
-		LanguageServiceClient client = googleNaturalLanguageProvider.getNativeClient();
 
 		return googleNaturalLanguageProvider;
 	}

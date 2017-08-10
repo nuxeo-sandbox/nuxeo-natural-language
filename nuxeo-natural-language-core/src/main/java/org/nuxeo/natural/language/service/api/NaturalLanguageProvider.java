@@ -25,48 +25,35 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.Blob;
-
 /**
- * A Natural Language provider is a wrapper that encapsulates calls to a given Natural Language service
+ * A Natural Language provider is a wrapper that encapsulates calls to a given
+ * Natural Language service
+ *
  * @since 9.2
  */
 public interface NaturalLanguageProvider {
 
-    /**
-     * @param blobs the blobs to pass to the API
-     * @param features the feature to request from the provider
-     * @param maxResults the maximum number of results per feature
-     * @return a {@link NaturalLanguageResponse} object
-     */
-    List<NaturalLanguageResponse> processBlobs(List<Blob> blobs, List<NaturalLanguageFeature> features)
-            throws IOException, GeneralSecurityException, IllegalStateException;
+	/**
+	 *
+	 * @param text
+	 *            Text to analyze
+	 * @param features
+	 *            Features to request
+	 * @param encoding
+	 *            Encoding to use. Can be {@code null}. Possible values are "UTF8", "UTF16" and "UTF32"
+	 * @return a {@link NaturalLanguageResponse} object
+	 */
+	NaturalLanguageResponse processText(String text, List<NaturalLanguageFeature> features, NaturalLanguageEncoding encoding)
+			throws IOException, GeneralSecurityException, IllegalStateException;
 
-    /**
-     *
-     * @param text to anayze
-     * @param features to request from the provider
-     * @return a {@link NaturalLanguageResponse} object
-     */
-    NaturalLanguageResponse processText(String text , List<NaturalLanguageFeature> features)
-            throws IOException, GeneralSecurityException, IllegalStateException;
+	/**
+	 * @return The list of feature supported by the provider
+	 */
+	List<NaturalLanguageFeature> getSupportedFeatures();
 
-    /**
-     * @return The list of feature supported by the provider
-     */
-    List<NaturalLanguageFeature> getSupportedFeatures();
-
-    /**
-     * Verifies that the blobs size and format are supported by the provider
-     *
-     * @param blobs the blobs to pass to the API
-     * @return a {@link NaturalLanguageResponse} object
-     */
-    boolean checkBlobs(List<Blob> blobs) throws IOException;
-
-    /**
-     * @return the provider native client object
-     */
-    Object getNativeClient();
+	/**
+	 * @return the provider native client object
+	 */
+	Object getNativeClient();
 
 }

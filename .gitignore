@@ -28,3 +28,7 @@ bin/
 *~bak
 *-bak
 *.bak
+
+#specific to nuxeo-natural-language
+natural-language-test.conf
+

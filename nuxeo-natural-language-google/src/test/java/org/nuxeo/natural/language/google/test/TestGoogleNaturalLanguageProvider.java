@@ -60,13 +60,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.google.cloud.language.v1.LanguageServiceClient;
 
 @RunWith(FeaturesRunner.class)
-@Features({ PlatformFeature.class })
+@Features({ PlatformFeature.class, SimpleFeatureCustom.class })
 @Deploy({ "nuxeo-natural-language-core", "nuxeo-natural-language-google" })
 public class TestGoogleNaturalLanguageProvider {
-
-	public static final String CRED_PROP = "org.nuxeo.natural.language.test.credential.file";
-
-	public static final String KEY_PROP = "org.nuxeo.natural.language.test.credential.key";
 
 	protected String PDF_EN = "files/DocumentManagement-EN-2017.pdf";
 
@@ -131,6 +127,9 @@ public class TestGoogleNaturalLanguageProvider {
 
 	@Before
 	public void setup() {
+
+		Assume.assumeTrue("Credential are not set", areCredentialsSet());
+
 		NaturalLanguageProvider languageProvider = naturalLanguageService.getProvider("google");
 
 		assertNotNull(languageProvider);
@@ -177,12 +176,12 @@ public class TestGoogleNaturalLanguageProvider {
 	@Test
 	public void testLanguageDetection() throws UnsupportedEncodingException, IOException {
 
+		Assume.assumeTrue("Credential are not set", areCredentialsSet());
+
 		String text;
 		String language;
 		NaturalLanguageResponse response;
 
-		googleNaturalLanguageProvider
-				.setCredentialFilePath("/Users/thibaud/Nuxeo-Misc/nuxeo-vision-f69dfb848a34-NATURAL-LANGUAGE.json");
 		List<NaturalLanguageFeature> features = new ArrayList<NaturalLanguageFeature>();
 		// features.add(NaturalLanguageFeature.ENTITIES);
 		features.add(NaturalLanguageFeature.DOCUMENT_SENTIMENT);
@@ -221,12 +220,12 @@ public class TestGoogleNaturalLanguageProvider {
 	@Test
 	public void testtWordDocument() throws UnsupportedEncodingException, IOException {
 
+		Assume.assumeTrue("Credential are not set", areCredentialsSet());
+
 		String text;
 		String language;
 		NaturalLanguageResponse response;
 
-		googleNaturalLanguageProvider
-				.setCredentialFilePath("/Users/thibaud/Nuxeo-Misc/nuxeo-vision-f69dfb848a34-NATURAL-LANGUAGE.json");
 		List<NaturalLanguageFeature> features = new ArrayList<NaturalLanguageFeature>();
 		features.add(NaturalLanguageFeature.ENTITIES);
 		features.add(NaturalLanguageFeature.DOCUMENT_SENTIMENT);
@@ -252,15 +251,13 @@ public class TestGoogleNaturalLanguageProvider {
 		assertNotNull(sentences);
 
 		List<NaturalLanguageToken> tockens = response.getTokens();
-		assertNotNull(sentences);
+		assertNotNull(tockens);
 
 	}
 
 	@Test
 	public void testSyntax() throws UnsupportedEncodingException, IOException {
 
-		googleNaturalLanguageProvider
-				.setCredentialFilePath("/Users/thibaud/Nuxeo-Misc/nuxeo-vision-f69dfb848a34-NATURAL-LANGUAGE.json");
 		List<NaturalLanguageFeature> features = new ArrayList<NaturalLanguageFeature>();
 		features.add(NaturalLanguageFeature.SYNTAX);
 
@@ -292,33 +289,15 @@ public class TestGoogleNaturalLanguageProvider {
 	}
 
 	@Test
-	public void testHasNativeClient() {
-
-		Assume.assumeTrue("googleNaturalLanguageProvider is not set", googleNaturalLanguageProvider != null);
-
-		// AIzaSyBtpcwxhaLYleTH6aZkZDiVKmrAdcF-0EI
-		// /Users/thibaud/Nuxeo-Misc/nuxeo-vision-f69dfb848a34-NATURAL-LANGUAGE.json
-		GoogleNaturalLanguageProvider gnl = (GoogleNaturalLanguageProvider) naturalLanguageService
-				.getProvider("google");
-		// gnl.setAPIKey("AIzaSyBtpcwxhaLYleTH6aZkZDiVKmrAdcF");
-		gnl.setCredentialFilePath("/Users/thibaud/Nuxeo-Misc/nuxeo-vision-f69dfb848a34-NATURAL-LANGUAGE.json");
-
-		LanguageServiceClient client = gnl.getNativeClient();
-		assertNotNull(client);
-
-	}
-
-	@Test
 	public void testProviderSentimentAndEntities() throws IOException {
+
+		Assume.assumeTrue("Credential are not set", areCredentialsSet());
 
 		assertNotNull(googleNaturalLanguageProvider);
 
 		File file = FileUtils.getResourceFileFromContext("files/status_quo.txt");
 		Blob blob = Blobs.createBlob(file);
 		String text = blob.getString();
-
-		googleNaturalLanguageProvider
-				.setCredentialFilePath("/Users/thibaud/Nuxeo-Misc/nuxeo-vision-f69dfb848a34-NATURAL-LANGUAGE.json");
 
 		List<NaturalLanguageFeature> features = new ArrayList<NaturalLanguageFeature>();
 		features.add(NaturalLanguageFeature.ENTITIES);
@@ -386,26 +365,34 @@ public class TestGoogleNaturalLanguageProvider {
 
 	}
 
+	@Test
+	public void testHasNativeClient() {
+
+		Assume.assumeTrue("Credential are not set", areCredentialsSet());
+
+		GoogleNaturalLanguageProvider gnl = (GoogleNaturalLanguageProvider) naturalLanguageService
+				.getProvider("google");
+
+		LanguageServiceClient client = gnl.getNativeClient();
+		assertNotNull(client);
+
+	}
+
 	protected GoogleNaturalLanguageProvider getGoogleNaturalLanguageProvider() {
 		if (googleNaturalLanguageProvider != null) {
 			return googleNaturalLanguageProvider;
 		}
 		Map<String, String> params = new HashMap<>();
 		params.put(GoogleNaturalLanguageProvider.APP_NAME_PARAM, "Nuxeo");
-		params.put(GoogleNaturalLanguageProvider.API_KEY_PARAM, System.getProperty(KEY_PROP));
-		// params.put(GoogleNaturalLanguageProvider.CREDENTIAL_PATH_PARAM,
-		// System.getProperty(CRED_PROP));
-
-		String THE_PATH = "/Users/thibaud/Nuxeo-Misc/nuxeo-vision-f69dfb848a34-NATURAL-LANGUAGE.json";
-		params.put(GoogleNaturalLanguageProvider.CREDENTIAL_PATH_PARAM, THE_PATH);
+		params.put(GoogleNaturalLanguageProvider.CREDENTIAL_PATH_PARAM,
+				System.getProperty(SimpleFeatureCustom.GOOGLE_CREDENTIALS_CONFIGURATION_PARAM));
 		googleNaturalLanguageProvider = new GoogleNaturalLanguageProvider(params);
 
 		return googleNaturalLanguageProvider;
 	}
 
 	protected boolean areCredentialsSet() {
-		return StringUtils.isNotBlank(System.getProperty(CRED_PROP))
-				|| StringUtils.isNotBlank(System.getProperty(KEY_PROP));
+		return StringUtils.isNotBlank(System.getProperty(SimpleFeatureCustom.GOOGLE_CREDENTIALS_CONFIGURATION_PARAM));
 	}
 
 }

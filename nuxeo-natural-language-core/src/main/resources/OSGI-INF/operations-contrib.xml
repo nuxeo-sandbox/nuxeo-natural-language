@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.natural.language.operations" version="1.0">
   <extension point="operations" target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
-    <operation class="org.nuxeo.natural.language.operations.NaturalLanguageOp" />
+    <operation class="org.nuxeo.natural.language.operations.NaturalLanguageOnBlobOp" />
+    <operation class="org.nuxeo.natural.language.operations.NaturalLanguageOnDocumentOp" />
+    <operation class="org.nuxeo.natural.language.operations.NaturalLanguageOnStringOp" />
   </extension>
 </component>

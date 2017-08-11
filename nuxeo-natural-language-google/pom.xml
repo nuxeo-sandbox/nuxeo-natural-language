@@ -9,6 +9,7 @@
   <name>Nuxeo Natural Language Google</name>
 
   <dependencies>
+
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>

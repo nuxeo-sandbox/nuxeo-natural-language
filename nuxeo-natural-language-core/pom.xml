@@ -58,9 +58,8 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <systemPropertyVariables>
-            <org.nuxeo.vision.test.credential.key>${org.nuxeo.vision.test.credential.key}</org.nuxeo.vision.test.credential.key>
-            <org.nuxeo.vision.test.credential.file>${org.nuxeo.vision.test.credential.file}</org.nuxeo.vision.test.credential.file>
-            <org.nuxeo.vision.default.provider>mock</org.nuxeo.vision.default.provider>
+            <org.nuxeo.natural.language.test.google.credential.file>${org.nuxeo.natural.language.test.google.credential.file}</org.nuxeo.natural.language.test.google.credential.file>
+            <org.nuxeo.natural.language.default.provider>mock</org.nuxeo.natural.language.default.provider>
           </systemPropertyVariables>
         </configuration>
       </plugin>

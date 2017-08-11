@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -37,8 +37,6 @@ import com.google.cloud.language.v1.Document;
 import com.google.cloud.language.v1.Document.Type;
 import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.cloud.language.v1.LanguageServiceSettings;
-import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.natural.language.service.api.NaturalLanguageEncoding;
 import org.nuxeo.natural.language.service.api.NaturalLanguageFeature;
@@ -49,9 +47,9 @@ public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 
 	public static final String APP_NAME_PARAM = "appName";
 
-	public static final String API_KEY_PARAM = "apiKey";
-
 	public static final String CREDENTIAL_PATH_PARAM = "credentialFilePath";
+
+	public static final String CREDENTIAL_PATH_CONFIGURATION_PARAM = "org.nuxeo.natural.language.google.credential";
 
 	protected Map<String, String> params;
 
@@ -61,37 +59,32 @@ public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 		params = parameters;
 	}
 
+	// SHould start with checking GOOGLE_APPLICATION_CREDENTIALS?
+	// or check it if no credential path is provided?
 	protected LanguageServiceClient getLanguageServiceClient() throws IOException {
 
 		if (languageServiceClient == null) {
 			synchronized (this) {
 				if (languageServiceClient == null) {
 
-					if (usesServiceAccount()) {
-						final LanguageServiceSettings languageServiceSettings;
-						try (InputStream is = new FileInputStream(new File(getCredentialFilePath()))) {
-							final GoogleCredentials myCredentials = GoogleCredentials.fromStream(is)
-									.createScoped(LanguageServiceSettings.getDefaultServiceScopes());
+					final LanguageServiceSettings languageServiceSettings;
+					try (InputStream is = new FileInputStream(new File(getCredentialFilePath()))) {
+						final GoogleCredentials myCredentials = GoogleCredentials.fromStream(is)
+								.createScoped(LanguageServiceSettings.getDefaultServiceScopes());
 
-							final CredentialsProvider credentialsProvider = FixedCredentialsProvider
-									.create(myCredentials);
+						final CredentialsProvider credentialsProvider = FixedCredentialsProvider
+								.create(myCredentials);
 
-							languageServiceSettings = LanguageServiceSettings.newBuilder()
-									.setCredentialsProvider(credentialsProvider)
-									.setTransportProvider(LanguageServiceSettings.defaultTransportProvider()).build();
+						languageServiceSettings = LanguageServiceSettings.newBuilder()
+								.setCredentialsProvider(credentialsProvider)
+								.setTransportProvider(LanguageServiceSettings.defaultTransportProvider()).build();
 
-							languageServiceClient = LanguageServiceClient.create(languageServiceSettings);
+						languageServiceClient = LanguageServiceClient.create(languageServiceSettings);
 
-						} catch (IOException ioe) {
-							throw new NuxeoException(ioe);
-						}
-					} else {
-						try {
-							languageServiceClient = LanguageServiceClient.create();
-						} catch (IOException ioe) {
-							throw new NuxeoException(ioe);
-						}
+					} catch (IOException ioe) {
+						throw new NuxeoException(ioe);
 					}
+
 				}
 			}
 		}
@@ -100,7 +93,8 @@ public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 	}
 
 	@Override
-	public NaturalLanguageResponse processText(String text, List<NaturalLanguageFeature> features, NaturalLanguageEncoding encoding) throws IOException {
+	public NaturalLanguageResponse processText(String text, List<NaturalLanguageFeature> features,
+			NaturalLanguageEncoding encoding) throws IOException {
 
 		LanguageServiceClient language = getLanguageServiceClient();
 
@@ -110,7 +104,7 @@ public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 		Document.Builder docBuilder = Document.newBuilder();
 		docBuilder.setContent(text).setType(Type.PLAIN_TEXT);
 		requestBuilder.setDocument(docBuilder.build());
-		if(encoding != null) {
+		if (encoding != null) {
 			requestBuilder.setEncodingTypeValue(encoding.getNumber());
 		}
 
@@ -133,7 +127,8 @@ public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 
 	@Override
 	public List<NaturalLanguageFeature> getSupportedFeatures() {
-		return null;
+		return Arrays.asList(NaturalLanguageFeature.DOCUMENT_SENTIMENT, NaturalLanguageFeature.ENTITIES,
+				NaturalLanguageFeature.SYNTAX);
 	}
 
 	@Override
@@ -149,22 +144,8 @@ public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 		return params.get(CREDENTIAL_PATH_PARAM);
 	}
 
-	protected String getApiKey() {
-		return params.get(API_KEY_PARAM);
-	}
-
 	protected String getAppName() {
 		return params.get(APP_NAME_PARAM);
-	}
-
-	protected boolean usesServiceAccount() {
-		String path = getCredentialFilePath();
-		return StringUtils.isNotEmpty(path);
-	}
-
-	protected boolean usesApiKey() {
-		String key = getApiKey();
-		return StringUtils.isNotEmpty(key);
 	}
 
 	/**

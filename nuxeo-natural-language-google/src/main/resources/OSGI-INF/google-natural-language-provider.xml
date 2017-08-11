@@ -6,7 +6,6 @@
       <parameters>
         <parameter name="appName">Nuxeo</parameter>
         <parameter name="credentialFilePath">${org.nuxeo.natural.language.google.credential:=}</parameter>
-        <parameter name="apiKey">${org.nuxeo.natural.language.google.key:=}</parameter>
       </parameters>
     </provider>
   </extension>

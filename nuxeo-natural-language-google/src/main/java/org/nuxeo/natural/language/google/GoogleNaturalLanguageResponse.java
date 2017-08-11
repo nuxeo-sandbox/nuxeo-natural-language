@@ -112,9 +112,11 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 			if (googleSentences != null) {
 				sentences = new ArrayList<String>();
 				for (Sentence oneSentence : googleSentences) {
-					Sentiment sentiment = oneSentence.getSentiment();
-					sentiment.getMagnitude();
-					sentiment.getScore();
+					// TODO
+					// Add a NAturalLanguageSentence class that also contains these information
+					//Sentiment sentiment = oneSentence.getSentiment();
+					//sentiment.getMagnitude();
+					//sentiment.getScore();
 					sentences.add(oneSentence.getText().getContent());
 				}
 			}
@@ -203,9 +205,7 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 	// <--------------------- Other -------------------->
 	@Override
 	public Object getNativeObject() {
-		// TODO Auto-generated method stub
-		// return null;
-		throw new UnsupportedOperationException();
+		return nativeResponse;
 	}
 
 }

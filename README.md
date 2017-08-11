@@ -35,6 +35,50 @@ A typical way to extract the information from a Studio project is the following:
 * Add an Event Handler, typically for `Document Created` and `Document Modified`. We recommend using an _asynchronous_ handler, since an external service is called, and depending of the amount of data, the service can take time to return the result.
 * In the handler, call the one of the operations provided by the plugin (`Services.NaturalLanguageOnDocumentOp`, ...), using JavaScript automation (it will be easier to parse and handle the resuls). Call it with the features you need, parse and handle the result.
 
+### Example of JS Automation Using an Operaiton
+
+```
+// input is a File containing a valid analyzable file (pdf, Word, ...)
+function run(input, params) {
+  
+  var response, sentences, i, max, entities;
+  
+  Services.NaturalLanguageDocumentOp(
+    input, {
+      'features': ['DOCUMENT_SENTIMENT', 'ENTITIES'], //'SYNTAX'
+      'outputVariable': "response" /*,
+      'provider': ,
+      'xpath': */
+    });
+  
+  response = ctx.response;
+  Console.log("Language: " + response.getLanguage());
+  Console.log("Sentiment Score: " + response.getSentimentScore());
+  Console.log("Sentiment Magnitude: " + response.getSentimentMagnitude());
+  
+  Console.log("===============> sentences");
+  sentences = response.getSentences();
+  if(sentences !== null) {
+    max = sentences.length;
+    for(i = 0; i < max; ++i) {
+      Console.log("sentences #" + (i + 1) + ":\n" + sentences[i]);
+    }
+  }
+  
+  Console.log("===============> ENTITIES");
+  entities = response.getEntities();
+  if(entities !== null) {
+    max = entities.length;
+    for(i = 0; i < max; ++i) {
+      Console.log("Entity #" + (i + 1) + ":\n" + entities[i].toString());
+    }
+  }
+  
+  return input;
+
+}
+```
+
 
 
 ## Google Natural Language API: Authenticating to the Service

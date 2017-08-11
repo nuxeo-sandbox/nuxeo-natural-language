@@ -25,6 +25,10 @@
       <groupId>nuxeo.natural.language</groupId>
       <artifactId>nuxeo-natural-language-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>nuxeo.natural.language</groupId>
+      <artifactId>nuxeo-natural-language-google</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

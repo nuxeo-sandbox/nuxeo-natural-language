@@ -13,7 +13,7 @@
 
   <extension-point name="configuration">
     <documentation>Default behavior of the service</documentation>
-    <object class="org.nuxeo.natural.language.service.api.NaturalLanguageDescriptor" />
+    <object class="org.nuxeo.natural.language.service.impl.NaturalLanguageDescriptor" />
   </extension-point>
 
   <extension-point name="provider">

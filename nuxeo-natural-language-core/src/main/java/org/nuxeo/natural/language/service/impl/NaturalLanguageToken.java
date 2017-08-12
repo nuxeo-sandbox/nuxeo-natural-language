@@ -24,8 +24,8 @@ import java.util.Map;
 /**
  * Represents the smallest syntactic building block of the text.
  *
- * Notice: This class is based on the {@link Entity} class of Google Cloud
- * Natural Language API. See
+ * Notice: This class is based on the {@link com.google.cloud.language.v1.Token}
+ * class of Google Cloud Natural Language API. See
  * https://cloud.google.com/natural-language/docs/basics#syntactic_analysis_responses
  *
  * @since 9.2
@@ -294,9 +294,9 @@ public class NaturalLanguageToken {
 	 */
 	@Override
 	public String toString() {
-		return "Text:\n" + text + "\n\nBeginOffset\n" + beginOffset + "\n\nTag\n" + tag + "\n\nLemma\n" + lemma + "\n\nGender\n" + gender + "\n\nmMood\n"
-				+ mood + "\n\nPerson\n" + person + "\n\nProper\n" + proper + "\n\nForm\n" + form + "\n\nAspect\n"
-				+ aspect + "\n\nCase\n" + theCase + "\n";
+		return "Text:\n" + text + "\n\nBeginOffset\n" + beginOffset + "\n\nTag\n" + tag + "\n\nLemma\n" + lemma
+				+ "\n\nGender\n" + gender + "\n\nmMood\n" + mood + "\n\nPerson\n" + person + "\n\nProper\n" + proper
+				+ "\n\nForm\n" + form + "\n\nAspect\n" + aspect + "\n\nCase\n" + theCase + "\n";
 	}
 
 	/**

@@ -26,12 +26,12 @@ import org.nuxeo.natural.language.service.impl.NaturalLanguageToken;
 /**
  * The response from the service.
  *
- * Notice: This interface is based on the {@link Entity} class of Google Cloud
- * Natural Language API. Not all APIs and accessors are made available, at least
- * in the first version, but one can always call <code>getNativeObject</code>
- * and then extract all and every info as returned by the provider. Also, we
- * made it simpler (sentences are just a list of String, no offset in the
- * document)
+ * Notice: This interface is based on the {@link AnnotateTextResponse} class of
+ * Google Cloud Natural Language API. Not all APIs and accessors are made
+ * available, at least in the first version, but one can always call
+ * <code>getNativeObject</code> and then extract all and every info as returned
+ * by the provider for the given features. Also, we made it simpler (sentences
+ * are just a list of String, no other information for example)
  *
  * @since 9.2
  */
@@ -60,6 +60,7 @@ public interface NaturalLanguageResponse {
 	 * magnitude is not normalized; each expression of emotion within the text
 	 * (both positive and negative) contributes to the text's magnitude (so
 	 * longer text blocks may have greater magnitudes)
+	 *
 	 * @return value or {@code null} for none (asking sentiment info while it
 	 *         was not requested in the features for example)
 	 */

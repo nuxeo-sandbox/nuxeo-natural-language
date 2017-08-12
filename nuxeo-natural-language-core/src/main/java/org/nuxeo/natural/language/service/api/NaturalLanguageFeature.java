@@ -21,16 +21,16 @@ package org.nuxeo.natural.language.service.api;
 
 public enum NaturalLanguageFeature {
 
-    ENTITIES("ENTITIES"), DOCUMENT_SENTIMENT("DOCUMENT_SENTIMENT"), SYNTAX("SYNTAX");
+	ENTITIES("ENTITIES"), DOCUMENT_SENTIMENT("DOCUMENT_SENTIMENT"), SYNTAX("SYNTAX");
 
-    private final String text;
+	private final String text;
 
-    NaturalLanguageFeature(final String text) {
-        this.text = text;
-    }
+	NaturalLanguageFeature(final String text) {
+		this.text = text;
+	}
 
-    @Override
-    public String toString() {
-        return text;
-    }
+	@Override
+	public String toString() {
+		return text;
+	}
 }

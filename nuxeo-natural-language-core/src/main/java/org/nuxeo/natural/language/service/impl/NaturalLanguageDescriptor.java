@@ -27,13 +27,13 @@ import org.nuxeo.natural.language.service.api.NaturalLanguage;
 @XObject("configuration")
 public class NaturalLanguageDescriptor {
 
-    @XNode("defaultProviderName")
-    protected String defaultProviderName;
+	@XNode("defaultProviderName")
+	protected String defaultProviderName;
 
-    public String getDefaultProviderName() {
-    	if(StringUtils.isBlank(defaultProviderName)) {
-    		return NaturalLanguage.DEFAULT_PROVIDER_NAME;
-    	}
-        return defaultProviderName;
-    }
+	public String getDefaultProviderName() {
+		if (StringUtils.isBlank(defaultProviderName)) {
+			return NaturalLanguage.DEFAULT_PROVIDER_NAME;
+		}
+		return defaultProviderName;
+	}
 }

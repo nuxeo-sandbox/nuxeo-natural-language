@@ -27,29 +27,31 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
+ * XML contribution to the service. Each provider defines their own parameters.
+ *
  * @since 9.2
  */
 @XObject("provider")
 public class NaturalLanguageProviderDescriptor {
 
-    @XNode("@name")
-    protected String providerName;
+	@XNode("@name")
+	protected String providerName;
 
-    @XNode("@class")
-    protected Class<?> klass;
+	@XNode("@class")
+	protected Class<?> klass;
 
-    @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> parameters = new HashMap<>();
+	@XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
+	protected Map<String, String> parameters = new HashMap<>();
 
-    public Class<?> getKlass() {
-        return klass;
-    }
+	public Class<?> getKlass() {
+		return klass;
+	}
 
-    public String getProviderName() {
-        return providerName;
-    }
+	public String getProviderName() {
+		return providerName;
+	}
 
-    public Map<String, String> getParameters() {
-        return parameters;
-    }
+	public Map<String, String> getParameters() {
+		return parameters;
+	}
 }

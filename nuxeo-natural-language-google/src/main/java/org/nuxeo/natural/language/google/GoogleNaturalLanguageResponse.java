@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     thibaud
+ *     Thibaud Arguillere
  */
 package org.nuxeo.natural.language.google;
 
@@ -34,6 +34,8 @@ import com.google.cloud.language.v1.Sentiment;
 import com.google.cloud.language.v1.Token;
 
 /**
+ * Implementation of the NaturalLanguageResponse wrapping Google's
+ * {@code AnnotateTextResponse}
  *
  * @since 9.2
  */
@@ -113,10 +115,11 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 				sentences = new ArrayList<String>();
 				for (Sentence oneSentence : googleSentences) {
 					// TODO
-					// Add a NAturalLanguageSentence class that also contains these information
-					//Sentiment sentiment = oneSentence.getSentiment();
-					//sentiment.getMagnitude();
-					//sentiment.getScore();
+					// Add a NaturalLanguageSentence class that also contains
+					// these information
+					// Sentiment sentiment = oneSentence.getSentiment();
+					// sentiment.getMagnitude();
+					// sentiment.getScore();
 					sentences.add(oneSentence.getText().getContent());
 				}
 			}

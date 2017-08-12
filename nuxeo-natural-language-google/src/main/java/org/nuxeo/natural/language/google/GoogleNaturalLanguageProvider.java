@@ -37,12 +37,19 @@ import com.google.cloud.language.v1.Document;
 import com.google.cloud.language.v1.Document.Type;
 import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.cloud.language.v1.LanguageServiceSettings;
+
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.natural.language.service.api.NaturalLanguageEncoding;
 import org.nuxeo.natural.language.service.api.NaturalLanguageFeature;
 import org.nuxeo.natural.language.service.api.NaturalLanguageProvider;
 import org.nuxeo.natural.language.service.api.NaturalLanguageResponse;
 
+/**
+ * Implementation of the "google" provider, using Google Natural Language API
+ *
+ * @since 9.2
+ */
 public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 
 	public static final String APP_NAME_PARAM = "appName";
@@ -51,7 +58,13 @@ public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 
 	public static final String CREDENTIAL_PATH_CONFIGURATION_PARAM = "org.nuxeo.natural.language.google.credential";
 
+	// see "Authenticating to the Cloud Natural Language API":
+	// https://cloud.google.com/natural-language/docs/auth
+	public static final String CREDENTIAL_ENV_VARIABLE = "GOOGLE_APPLICATION_CREDENTIALS";
+
 	protected Map<String, String> params;
+
+	protected String credentialsFilePath = null;
 
 	protected LanguageServiceClient languageServiceClient = null;
 
@@ -59,7 +72,7 @@ public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 		params = parameters;
 	}
 
-	// SHould start with checking GOOGLE_APPLICATION_CREDENTIALS?
+	// Should start with checking GOOGLE_APPLICATION_CREDENTIALS?
 	// or check it if no credential path is provided?
 	protected LanguageServiceClient getLanguageServiceClient() throws IOException {
 
@@ -72,8 +85,7 @@ public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 						final GoogleCredentials myCredentials = GoogleCredentials.fromStream(is)
 								.createScoped(LanguageServiceSettings.getDefaultServiceScopes());
 
-						final CredentialsProvider credentialsProvider = FixedCredentialsProvider
-								.create(myCredentials);
+						final CredentialsProvider credentialsProvider = FixedCredentialsProvider.create(myCredentials);
 
 						languageServiceSettings = LanguageServiceSettings.newBuilder()
 								.setCredentialsProvider(credentialsProvider)
@@ -141,7 +153,21 @@ public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 	}
 
 	protected String getCredentialFilePath() {
-		return params.get(CREDENTIAL_PATH_PARAM);
+
+		if (credentialsFilePath == null) {
+			credentialsFilePath = params.get(CREDENTIAL_PATH_PARAM);
+			if (StringUtils.isBlank(credentialsFilePath)) {
+				credentialsFilePath = System.getProperty(CREDENTIAL_ENV_VARIABLE);
+				if (StringUtils.isBlank(credentialsFilePath)) {
+					try {
+						credentialsFilePath = System.getenv(CREDENTIAL_ENV_VARIABLE);
+					} catch (SecurityException e) {
+						// We just ignore the error in this case
+					}
+				}
+			}
+		}
+		return credentialsFilePath;
 	}
 
 	protected String getAppName() {

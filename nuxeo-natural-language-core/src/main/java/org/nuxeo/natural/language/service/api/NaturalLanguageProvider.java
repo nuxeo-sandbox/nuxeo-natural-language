@@ -40,11 +40,12 @@ public interface NaturalLanguageProvider {
 	 * @param features
 	 *            Features to request
 	 * @param encoding
-	 *            Encoding to use. Can be {@code null}. Possible values are "UTF8", "UTF16" and "UTF32"
+	 *            Encoding to use. Can be {@code null}. Possible values are
+	 *            "UTF8", "UTF16" and "UTF32"
 	 * @return a {@link NaturalLanguageResponse} object
 	 */
-	NaturalLanguageResponse processText(String text, List<NaturalLanguageFeature> features, NaturalLanguageEncoding encoding)
-			throws IOException, GeneralSecurityException, IllegalStateException;
+	NaturalLanguageResponse processText(String text, List<NaturalLanguageFeature> features,
+			NaturalLanguageEncoding encoding) throws IOException, GeneralSecurityException, IllegalStateException;
 
 	/**
 	 * @return The list of feature supported by the provider

@@ -89,9 +89,11 @@ function run(input, params) {
 - Store it in in you Dev/Test/Prod Nuxeo server
 - Set the `org.nuxeo.natural.language.google.credential` (in nuxeo.conf) parameter to the full path to this credentials file.
 
+#### Algorithm Used when Connecting to the Service
+ 1. If the `org.nuxeo.natural.language.google.credential` configuraiton parameter is set, use it
+ 2. Else, read the `GOOGLE_APPLICATION_CREDENTIALS` Environment Variable (this is common Google variable, set to access its misc. APIs)
+ 3. If none of the previous returned a value, the call will fail
 
-## QA
-TBB
  
 ## Build
 #### Requirements
@@ -120,10 +122,12 @@ As of this version, only Google is supported as provider:
 - As of August 2017, billing must be activated in your google account in order to use the Natural Language API
 - Get a credential file from the Google Developer Console
 - Store it in in you Dev/Test/Prod Nuxeo server
-- Edit nuxeo.conf
+- Edit nuxeo.conf and add the path to the credentials file
 ```
 org.nuxeo.natural.language.google.credential=PATH_TO_JSON_CREDENTIAL_FILE
 ```
+  - Alternatively, you can set the `GOOGLE_APPLICATION_CREDENTIALS` environmenent variable
+ 
 - Install the marketplace package
  
 # Resources (Documentation and other links)

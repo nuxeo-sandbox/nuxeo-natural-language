@@ -148,12 +148,12 @@ public class NaturalLanguageEntity {
 		map.put("name", name);
 		map.put("type", type);
 		map.put("salience", "" + salience);
-		if(mentions != null) {
+		if (mentions != null) {
 			map.put("mentions", mentions.toString());
 		} else {
 			map.put("mentions", "");
 		}
-		if(metadata != null) {
+		if (metadata != null) {
 			map.put("metadata", metadata.toString());
 		} else {
 			map.put("metadata", "");

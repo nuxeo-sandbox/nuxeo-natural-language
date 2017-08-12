@@ -45,6 +45,8 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
+ * Implementation of the NaturalLanguage service
+ *
  * @since 9.2
  */
 public class NaturalLanguageImpl extends DefaultComponent implements NaturalLanguage {
@@ -138,8 +140,7 @@ public class NaturalLanguageImpl extends DefaultComponent implements NaturalLang
 
 		SimpleBlobHolder blobHolder = new SimpleBlobHolder(blob);
 		ConversionService conversionService = Framework.getLocalService(ConversionService.class);
-		BlobHolder resultBlob = conversionService
-				.convert("any2text", blobHolder, null);
+		BlobHolder resultBlob = conversionService.convert("any2text", blobHolder, null);
 		String text = new String(resultBlob.getBlob().getByteArray(), "UTF-8");
 
 		return text;

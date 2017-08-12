@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.natural.language.core.test.mock.provider">
+
+  <require>org.nuxeo.natural.language.service</require>
+
+  <extension target="org.nuxeo.natural.language.service" point="configuration">
+    <configuration>
+      <defaultProviderName>mock</defaultProviderName>
+    </configuration>
+  </extension>
+
+  <extension point="provider" target="org.nuxeo.natural.language.service">
+    <provider class="org.nuxeo.natural.language.core.test.mock.MockNaturalLanguageProvider" name="mock"/>
+  </extension>
+
+</component>

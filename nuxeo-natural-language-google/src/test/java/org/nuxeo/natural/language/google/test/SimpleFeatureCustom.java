@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.natural.language.google.GoogleNaturalLanguageProvider;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
@@ -46,7 +47,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * source code, and add this to the file:
  *
  * <pre>
- * org.nuxeo.natural.language.google.credential=/path/to/your/credentials.json
+ * org.nuxeo.natural.language.google.credentials=/path/to/your/credentials.json
  * </pre>
  *
  * </li>
@@ -69,7 +70,7 @@ public class SimpleFeatureCustom extends SimpleFeature {
 
 	public static final String TEST_CONF_FILE = "natural-language-test.conf";
 
-	public static final String GOOGLE_CREDENTIALS_CONFIGURATION_PARAM = "org.nuxeo.natural.language.google.credential";
+	public static final String GOOGLE_CREDENTIALS_CONFIGURATION_PARAM = GoogleNaturalLanguageProvider.CREDENTIAL_PATH_CONFIGURATION_PARAM;
 
 	// FOund in the pom.xml
 	public static final String GOOGLE_CREDENTIALS_TEST_PARAM = "org.nuxeo.natural.language.test.google.credential.file";

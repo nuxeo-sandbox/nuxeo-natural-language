@@ -56,7 +56,7 @@ public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 
 	public static final String CREDENTIAL_PATH_PARAM = "credentialFilePath";
 
-	public static final String CREDENTIAL_PATH_CONFIGURATION_PARAM = "org.nuxeo.natural.language.google.credential";
+	public static final String CREDENTIAL_PATH_CONFIGURATION_PARAM = "org.nuxeo.natural.language.google.credentials";
 
 	// see "Authenticating to the Cloud Natural Language API":
 	// https://cloud.google.com/natural-language/docs/auth

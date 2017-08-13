@@ -5,7 +5,7 @@
     <provider class="org.nuxeo.natural.language.google.GoogleNaturalLanguageProvider" name="google">
       <parameters>
         <parameter name="appName">Nuxeo</parameter>
-        <parameter name="credentialFilePath">${org.nuxeo.natural.language.google.credential:=}</parameter>
+        <parameter name="credentialFilePath">${org.nuxeo.natural.language.google.credentials:=}</parameter>
       </parameters>
     </provider>
   </extension>

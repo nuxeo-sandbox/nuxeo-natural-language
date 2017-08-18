@@ -21,9 +21,13 @@ package org.nuxeo.natural.language.google;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.natural.language.service.api.NaturalLanguageEntity;
 import org.nuxeo.natural.language.service.api.NaturalLanguageResponse;
-import org.nuxeo.natural.language.service.impl.NaturalLanguageEntity;
-import org.nuxeo.natural.language.service.impl.NaturalLanguageToken;
+import org.nuxeo.natural.language.service.api.NaturalLanguageSentence;
+import org.nuxeo.natural.language.service.api.NaturalLanguageToken;
+import org.nuxeo.natural.language.service.impl.NaturalLanguageEntityImpl;
+import org.nuxeo.natural.language.service.impl.NaturalLanguageSentenceImpl;
+import org.nuxeo.natural.language.service.impl.NaturalLanguageTokenImpl;
 
 import com.google.cloud.language.v1.AnnotateTextResponse;
 import com.google.cloud.language.v1.Entity;
@@ -47,7 +51,7 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 
 	boolean sentimentDocTested = false;
 
-	List<String> sentences = null;
+	List<NaturalLanguageSentence> sentences = null;
 
 	boolean sentencesTested = false;
 
@@ -106,21 +110,19 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 	 * @return value or {@code null} for none
 	 */
 	@Override
-	public List<String> getSentences() {
+	public List<NaturalLanguageSentence> getSentences() {
 
 		if (sentences == null && !sentencesTested) {
 
 			List<Sentence> googleSentences = nativeResponse.getSentencesList();
 			if (googleSentences != null) {
-				sentences = new ArrayList<String>();
+				sentences = new ArrayList<NaturalLanguageSentence>();
+				NaturalLanguageSentence finalSentence;
 				for (Sentence oneSentence : googleSentences) {
-					// TODO
-					// Add a NaturalLanguageSentence class that also contains
-					// these information
-					// Sentiment sentiment = oneSentence.getSentiment();
-					// sentiment.getMagnitude();
-					// sentiment.getScore();
-					sentences.add(oneSentence.getText().getContent());
+					Sentiment sentiment = oneSentence.getSentiment();
+					finalSentence = new NaturalLanguageSentenceImpl(oneSentence.getText().getContent(),
+							sentiment.getScore(), sentiment.getMagnitude());
+					sentences.add(finalSentence);
 				}
 			}
 
@@ -137,7 +139,7 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 
 			List<Entity> googleEntities = nativeResponse.getEntitiesList();
 			if (googleEntities != null) {
-				NaturalLanguageEntity entity;
+				NaturalLanguageEntityImpl entity;
 				entities = new ArrayList<NaturalLanguageEntity>();
 				for (Entity googleEntity : googleEntities) {
 					ArrayList<String> mentions = new ArrayList<String>();
@@ -154,7 +156,7 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 					Entity.Type entityType = googleEntity.getType();
 					String typeName = entityType == null ? Entity.Type.UNKNOWN.name() : entityType.name();
 
-					entity = new NaturalLanguageEntity(googleEntity.getName(), typeName, googleEntity.getSalience(),
+					entity = new NaturalLanguageEntityImpl(googleEntity.getName(), typeName, googleEntity.getSalience(),
 							mentions, googleEntity.getMetadataMap());
 					entities.add(entity);
 				}
@@ -175,7 +177,7 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 
 			List<Token> googleTokens = nativeResponse.getTokensList();
 			if (googleTokens != null) {
-				NaturalLanguageToken token;
+				NaturalLanguageTokenImpl token;
 				tokens = new ArrayList<NaturalLanguageToken>();
 				for (Token googleToken : googleTokens) {
 					String text = googleToken.getText().getContent(); // toString();
@@ -192,7 +194,7 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 					String aspect = partOfSpeech.getAspect().name();
 					String theCase = partOfSpeech.getCase().name();
 
-					token = new NaturalLanguageToken(text, beginOffset, tagName, lemma, gender, mood, person, proper,
+					token = new NaturalLanguageTokenImpl(text, beginOffset, tagName, lemma, gender, mood, person, proper,
 							form, aspect, theCase);
 					tokens.add(token);
 

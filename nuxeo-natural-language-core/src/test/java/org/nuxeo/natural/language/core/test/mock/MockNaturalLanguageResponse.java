@@ -20,9 +20,10 @@ package org.nuxeo.natural.language.core.test.mock;
 
 import java.util.List;
 
+import org.nuxeo.natural.language.service.api.NaturalLanguageEntity;
 import org.nuxeo.natural.language.service.api.NaturalLanguageResponse;
-import org.nuxeo.natural.language.service.impl.NaturalLanguageEntity;
-import org.nuxeo.natural.language.service.impl.NaturalLanguageToken;
+import org.nuxeo.natural.language.service.api.NaturalLanguageSentence;
+import org.nuxeo.natural.language.service.api.NaturalLanguageToken;
 
 /**
  *
@@ -48,7 +49,7 @@ public class MockNaturalLanguageResponse implements NaturalLanguageResponse {
 	}
 
 	@Override
-	public List<String> getSentences() {
+	public List<NaturalLanguageSentence> getSentences() {
 		return null;
 	}
 

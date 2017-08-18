@@ -16,9 +16,8 @@
  * Contributors:
  *     Thibaud Arguillere
  */
-package org.nuxeo.natural.language.service.impl;
+package org.nuxeo.natural.language.service.api;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,35 +33,14 @@ import java.util.Map;
  *
  * @since 9.2
  */
-public class NaturalLanguageEntity {
-
-	protected String name;
-
-	protected String type;
-
-	protected float salience;
-
-	protected List<String> mentions;
-
-	protected Map<String, String> metadata;
-
-	public NaturalLanguageEntity(String name, String type, float salience, List<String> mentions,
-			Map<String, String> metadata) {
-		this.name = name;
-		this.type = type;
-		this.salience = salience;
-		this.mentions = mentions;
-		this.metadata = metadata;
-	}
+public interface NaturalLanguageEntity {
 
 	/**
 	 * The value of the entity
 	 *
 	 * @return value
 	 */
-	public String getName() {
-		return name;
-	}
+	public String getName();
 
 	/**
 	 * The entity type (for example if the entity is a person, location,
@@ -70,9 +48,7 @@ public class NaturalLanguageEntity {
 	 *
 	 * @return value or {@code null} for none
 	 */
-	public String getType() {
-		return type;
-	}
+	public String getType();
 
 	/**
 	 * The salience score associated with the entity in the [0, 1.0] range.
@@ -84,9 +60,7 @@ public class NaturalLanguageEntity {
 	 *
 	 * @return value or {@code null} for none
 	 */
-	public float getSalience() {
-		return salience;
-	}
+	public float getSalience();
 
 	/**
 	 * List of entities that are . This information can be useful if you want to
@@ -98,9 +72,7 @@ public class NaturalLanguageEntity {
 	 *
 	 * @return value or {@code null} for none
 	 */
-	public List<String> getMentions() {
-		return mentions;
-	}
+	public List<String> getMentions();
 
 	/**
 	 * Metadata associated with the entity.
@@ -110,9 +82,23 @@ public class NaturalLanguageEntity {
 	 *
 	 * @return value or {@code null} for none
 	 */
-	public Map<String, String> getMetadata() {
-		return metadata;
-	}
+	public Map<String, String> getMetadata();
+
+	/**
+	 * Utility method to output an entity
+	 *
+	 * @return the string representation
+	 */
+	@Override
+	public String toString();
+
+
+	/**
+	 * Utility method to output an entity in a map
+	 *
+	 * @return the map representation
+	 */
+	public Map<String, String> toMap();
 
 	/**
 	 * Static utility searching for the first entity with this name
@@ -130,36 +116,6 @@ public class NaturalLanguageEntity {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Utility method to output an entity
-	 *
-	 * @param e
-	 * @return the string representation
-	 */
-	@Override
-	public String toString() {
-		return "" + name + "\n" + type + "\n" + salience + "\n" + mentions + "\n" + metadata;
-	}
-
-	public Map<String, String> toMap() {
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("name", name);
-		map.put("type", type);
-		map.put("salience", "" + salience);
-		if (mentions != null) {
-			map.put("mentions", mentions.toString());
-		} else {
-			map.put("mentions", "");
-		}
-		if (metadata != null) {
-			map.put("metadata", metadata.toString());
-		} else {
-			map.put("metadata", "");
-		}
-
-		return map;
 	}
 
 }

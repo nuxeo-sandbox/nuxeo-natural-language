@@ -16,9 +16,8 @@
  * Contributors:
  *     Thibaud Arguillere
  */
-package org.nuxeo.natural.language.service.impl;
+package org.nuxeo.natural.language.service.api;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -30,53 +29,14 @@ import java.util.Map;
  *
  * @since 9.2
  */
-public class NaturalLanguageToken {
-
-	protected String text;
-
-	protected int beginOffset;
-
-	protected String tag;
-
-	protected String lemma;
-
-	protected String gender;
-
-	protected String mood;
-
-	protected String person;
-
-	protected String proper;
-
-	protected String form;
-
-	protected String aspect;
-
-	protected String theCase;
-
-	public NaturalLanguageToken(String text, int beginOffset, String tag, String lemma, String gender, String mood,
-			String person, String proper, String form, String aspect, String theCase) {
-		this.text = text;
-		this.beginOffset = beginOffset;
-		this.tag = tag;
-		this.lemma = lemma;
-		this.gender = gender;
-		this.mood = mood;
-		this.person = person;
-		this.proper = proper;
-		this.form = form;
-		this.aspect = aspect;
-		this.theCase = theCase;
-	}
+public interface NaturalLanguageToken {
 
 	/**
 	 * The token text.
 	 *
 	 * @return value or {@code null} for none
 	 */
-	public String getText() {
-		return text;
-	}
+	public String getText();
 
 	/**
 	 * The token text begin offset.
@@ -84,9 +44,7 @@ public class NaturalLanguageToken {
 	 * @return value or -1 when parsing could not detect the offset (main
 	 *         reason: No encoding passed when calling the service)
 	 */
-	public int getBeginOffset() {
-		return beginOffset;
-	}
+	public int getBeginOffset();
 
 	/**
 	 * Part of speech tag for this token.
@@ -105,9 +63,7 @@ public class NaturalLanguageToken {
 	 *
 	 * @return value or {@code null} for none
 	 */
-	public String getTag() {
-		return tag;
-	}
+	public String getTag();
 
 	/**
 	 * <<Gammatical gender: Gender classes of nouns reflected in the behaviour
@@ -125,9 +81,7 @@ public class NaturalLanguageToken {
 	 *
 	 * @return the gender
 	 */
-	public String getGender() {
-		return gender;
-	}
+	public String getGender();
 
 	/**
 	 * <<The grammatical feature of verbs, used for showing modality and
@@ -148,9 +102,7 @@ public class NaturalLanguageToken {
 	 *
 	 * @return the mood
 	 */
-	public String getMood() {
-		return gender;
-	}
+	public String getMood();
 
 	/**
 	 * <<The distinction between the speaker, second person, third person,
@@ -168,9 +120,7 @@ public class NaturalLanguageToken {
 	 *
 	 * @return the person
 	 */
-	public String getPerson() {
-		return person;
-	}
+	public String getPerson();
 
 	/**
 	 * <<This category shows if the token is part of a proper name.>>
@@ -186,9 +136,7 @@ public class NaturalLanguageToken {
 	 *
 	 * @return the proper
 	 */
-	public String getProper() {
-		return proper;
-	}
+	public String getProper();
 
 	/**
 	 * The grammatical form. <<Depending on the language, Form can be
@@ -217,9 +165,7 @@ public class NaturalLanguageToken {
 	 *
 	 * @return the form
 	 */
-	public String getForm() {
-		return form;
-	}
+	public String getForm();
 
 	/**
 	 * <<The grammatical aspect. The characteristic of a verb that expresses
@@ -237,9 +183,7 @@ public class NaturalLanguageToken {
 	 *
 	 * @return the aspect
 	 */
-	public String getAspect() {
-		return aspect;
-	}
+	public String getAspect();
 
 	/**
 	 * <<The grammatical case. The grammatical function performed by a noun or
@@ -270,9 +214,7 @@ public class NaturalLanguageToken {
 	 *
 	 * @return the case
 	 */
-	public String getCase() {
-		return theCase;
-	}
+	public String getCase();
 
 	/**
 	 * The "root" word upon which this word is based, which allows you to
@@ -282,9 +224,7 @@ public class NaturalLanguageToken {
 	 *
 	 * @return value or {@code null} for none
 	 */
-	public String getLemma() {
-		return lemma;
-	}
+	public String getLemma();
 
 	/**
 	 * Utility method to output an entity as String
@@ -293,11 +233,7 @@ public class NaturalLanguageToken {
 	 * @since 9.2
 	 */
 	@Override
-	public String toString() {
-		return "Text:\n" + text + "\n\nBeginOffset\n" + beginOffset + "\n\nTag\n" + tag + "\n\nLemma\n" + lemma
-				+ "\n\nGender\n" + gender + "\n\nmMood\n" + mood + "\n\nPerson\n" + person + "\n\nProper\n" + proper
-				+ "\n\nForm\n" + form + "\n\nAspect\n" + aspect + "\n\nCase\n" + theCase + "\n";
-	}
+	public String toString();
 
 	/**
 	 * Utility method to output an entity as Map
@@ -305,21 +241,6 @@ public class NaturalLanguageToken {
 	 * @return the string representation
 	 * @since 9.2
 	 */
-	public Map<String, String> toMap() {
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("text", text);
-		map.put("beginOffset", "" + beginOffset);
-		map.put("tag", tag);
-		map.put("lemma", lemma);
-		map.put("gender", gender);
-		map.put("mood", mood);
-		map.put("person", person);
-		map.put("proper", proper);
-		map.put("form", form);
-		map.put("aspect", aspect);
-		map.put("case", theCase);
-
-		return map;
-	}
+	public Map<String, String> toMap();
 
 }

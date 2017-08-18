@@ -47,11 +47,12 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.natural.language.google.GoogleNaturalLanguageProvider;
 import org.nuxeo.natural.language.service.api.NaturalLanguage;
 import org.nuxeo.natural.language.service.api.NaturalLanguageEncoding;
+import org.nuxeo.natural.language.service.api.NaturalLanguageEntity;
 import org.nuxeo.natural.language.service.api.NaturalLanguageFeature;
 import org.nuxeo.natural.language.service.api.NaturalLanguageProvider;
 import org.nuxeo.natural.language.service.api.NaturalLanguageResponse;
-import org.nuxeo.natural.language.service.impl.NaturalLanguageEntity;
-import org.nuxeo.natural.language.service.impl.NaturalLanguageToken;
+import org.nuxeo.natural.language.service.api.NaturalLanguageSentence;
+import org.nuxeo.natural.language.service.api.NaturalLanguageToken;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -247,7 +248,7 @@ public class TestGoogleNaturalLanguageProvider {
 		List<NaturalLanguageEntity> entities = response.getEntities();
 		assertNotNull(entities);
 
-		List<String> sentences = response.getSentences();
+		List<NaturalLanguageSentence> sentences = response.getSentences();
 		assertNotNull(sentences);
 
 		List<NaturalLanguageToken> tockens = response.getTokens();
@@ -355,7 +356,7 @@ public class TestGoogleNaturalLanguageProvider {
 		 * System.out.println(entity.toString()); }
 		 */
 
-		List<String> sentences = response.getSentences();
+		List<NaturalLanguageSentence> sentences = response.getSentences();
 		assertNotNull(sentences);
 		assertEquals(9, sentences.size());
 

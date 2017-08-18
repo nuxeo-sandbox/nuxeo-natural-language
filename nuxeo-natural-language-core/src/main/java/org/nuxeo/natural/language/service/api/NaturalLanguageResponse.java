@@ -20,9 +20,6 @@ package org.nuxeo.natural.language.service.api;
 
 import java.util.List;
 
-import org.nuxeo.natural.language.service.impl.NaturalLanguageEntity;
-import org.nuxeo.natural.language.service.impl.NaturalLanguageToken;
-
 /**
  * The response from the service.
  *
@@ -72,7 +69,7 @@ public interface NaturalLanguageResponse {
 	 *
 	 * @return value or {@code null} for none
 	 */
-	List<String> getSentences();
+	List<NaturalLanguageSentence> getSentences();
 
 	// <--------------------- Entities -------------------->
 	/**

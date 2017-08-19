@@ -62,7 +62,8 @@ public class NaturalLanguageOnDocumentOp {
 	@Param(name = "features", description = "A StringList of features to request from the API", required = true)
 	protected StringList features;
 
-	@Param(name = "xpath", description = "The xpath where to get the blob from", values = {"file:content"}, required = false)
+	@Param(name = "xpath", description = "The xpath where to get the blob from", values = {
+			"file:content" }, required = false)
 	protected String xpath;
 
 	@Param(name = "outputVariable", description = "The key of the context output variable. "

@@ -21,6 +21,8 @@ package org.nuxeo.natural.language.google;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.nuxeo.natural.language.service.api.NaturalLanguageEntity;
 import org.nuxeo.natural.language.service.api.NaturalLanguageResponse;
 import org.nuxeo.natural.language.service.api.NaturalLanguageSentence;
@@ -194,8 +196,8 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 					String aspect = partOfSpeech.getAspect().name();
 					String theCase = partOfSpeech.getCase().name();
 
-					token = new NaturalLanguageTokenImpl(text, beginOffset, tagName, lemma, gender, mood, person, proper,
-							form, aspect, theCase);
+					token = new NaturalLanguageTokenImpl(text, beginOffset, tagName, lemma, gender, mood, person,
+							proper, form, aspect, theCase);
 					tokens.add(token);
 
 				}
@@ -211,6 +213,12 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 	@Override
 	public Object getNativeObject() {
 		return nativeResponse;
+	}
+
+	@Override
+	public JSONObject toJSON() throws JSONException {
+
+		return NaturalLanguageResponse.toJSON(this);
 	}
 
 }

@@ -28,6 +28,9 @@ import java.util.*;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -290,7 +293,7 @@ public class TestGoogleNaturalLanguageProvider {
 	}
 
 	@Test
-	public void testProviderSentimentAndEntities() throws IOException {
+	public void testProviderSentimentAndEntities() throws IOException, JSONException {
 
 		Assume.assumeTrue("Credential are not set", areCredentialsSet());
 
@@ -351,18 +354,26 @@ public class TestGoogleNaturalLanguageProvider {
 		assertNotNull(entity);
 		assertEquals("WORK_OF_ART", entity.getType());
 
-		/*
-		 * for(NaturalLanguageEntity entity : entities) {
-		 * System.out.println(entity.toString()); }
-		 */
-
 		List<NaturalLanguageSentence> sentences = response.getSentences();
 		assertNotNull(sentences);
 		assertEquals(9, sentences.size());
 
 		// We did not ask for tokens
-		List<NaturalLanguageToken> tockens = response.getTokens();
-		assertTrue("Tokes not requested, should be empty or null", tockens == null || tockens.size() == 0);
+		List<NaturalLanguageToken> tokens = response.getTokens();
+		assertTrue("Tokes not requested, should be empty or null", tokens == null || tokens.size() == 0);
+
+		// Test JSON representation
+		JSONObject obj = response.toJSON();
+		assertTrue(obj.get("language").equals("en"));
+
+		JSONArray array = obj.getJSONArray("sentences");
+		assertEquals(9, array.length());
+
+		array = obj.getJSONArray("entities");
+		assertTrue(array.length() > 0);
+
+		array = obj.getJSONArray("tokens");
+		assertEquals(0, array.length());
 
 	}
 

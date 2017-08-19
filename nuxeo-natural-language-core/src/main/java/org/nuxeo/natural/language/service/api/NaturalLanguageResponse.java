@@ -20,6 +20,9 @@ package org.nuxeo.natural.language.service.api;
 
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * The response from the service.
  *
@@ -97,4 +100,33 @@ public interface NaturalLanguageResponse {
 	 *         service provider
 	 */
 	Object getNativeObject();
+
+	/**
+	 * Utility returning the JSON representation of the response
+	 *
+	 * @return the JSON representation of the response
+	 * @throws JSONException
+	 */
+	public JSONObject toJSON() throws JSONException;
+
+	/**
+	 * Static Utility returning the JSON representation of the response
+	 *
+	 * @param response
+	 * @return the JSON representation of the response
+	 * @throws JSONException
+	 */
+	static public JSONObject toJSON(NaturalLanguageResponse response) throws JSONException {
+
+		JSONObject obj = new JSONObject();
+
+		obj.put("language", response.getLanguage());
+		obj.put("sentimentScore", response.getSentimentScore());
+		obj.put("sentimentMagnitude", response.getSentimentMagnitude());
+		obj.put("sentences", NaturalLanguageSentence.sentencesToJSONArray(response.getSentences()));
+		obj.put("entities", NaturalLanguageEntity.entitiesToJSONArray(response.getEntities()));
+		obj.put("tokens", NaturalLanguageToken.tokensToJSONArray(response.getTokens()));
+
+		return obj;
+	}
 }

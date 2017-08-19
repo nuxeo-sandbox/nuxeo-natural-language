@@ -18,7 +18,11 @@
  */
 package org.nuxeo.natural.language.service.api;
 
-import java.util.Map;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * On sentence in the analyzed text, with its own sentiment.
@@ -38,34 +42,44 @@ public interface NaturalLanguageSentence {
 	public String getText();
 
 	/**
-	 * The score of this sentence
+	 * The score of the sentence
 	 *
 	 * @return value
 	 */
 	public float getScore();
 
 	/**
-	 * The magnitude of this sentence
+	 * The magnitude of the sentence
 	 *
 	 * @return value
 	 */
 	public float getMagnitude();
 
 	/**
-	 * Utility method to output an entity as String
 	 *
-	 * @return the string representation
-	 * @since 9.2
+	 * @return the JSON representation of the sentence
+	 * @throws JSONException
 	 */
-	@Override
-	public String toString();
+	public JSONObject toJSON() throws JSONException;
 
 	/**
-	 * Utility method to output an entity as Map
+	 * Utility, to build a JSON Array from the list of sentences
 	 *
-	 * @return the string representation
-	 * @since 9.2
+	 * @param sentences
+	 * @return the JSON array representation of the sentences
+	 * @throws JSONException
 	 */
-	public Map<String, String> toMap();
+	public static JSONArray sentencesToJSONArray(List<NaturalLanguageSentence> sentences) throws JSONException {
+
+		JSONArray array = new JSONArray();
+
+		if (sentences != null) {
+			for (NaturalLanguageSentence sentence : sentences) {
+				array.put(sentence.toJSON());
+			}
+		}
+
+		return array;
+	}
 
 }

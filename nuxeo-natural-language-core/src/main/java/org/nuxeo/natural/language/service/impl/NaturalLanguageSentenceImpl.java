@@ -18,10 +18,10 @@
  */
 package org.nuxeo.natural.language.service.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.nuxeo.natural.language.service.api.NaturalLanguageSentence;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Implementation of the NaturalLanguageSentence interface, with also the
@@ -65,13 +65,15 @@ public class NaturalLanguageSentenceImpl implements NaturalLanguageSentence {
 	}
 
 	@Override
-	public Map<String, String> toMap() {
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("text", text);
-		map.put("score", "" + score);
-		map.put("magnitude", "" + magnitude);
+	public JSONObject toJSON() throws JSONException {
 
-		return map;
+		JSONObject obj = new JSONObject();
+
+		obj.put("text", text);
+		obj.put("score", score);
+		obj.put("magnitude", magnitude);
+
+		return obj;
 	}
 
 }

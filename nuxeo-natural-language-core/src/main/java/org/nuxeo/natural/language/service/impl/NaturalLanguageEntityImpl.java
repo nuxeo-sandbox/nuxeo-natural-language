@@ -18,10 +18,11 @@
  */
 package org.nuxeo.natural.language.service.impl;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.nuxeo.natural.language.service.api.NaturalLanguageEntity;
 
 /**
@@ -30,7 +31,7 @@ import org.nuxeo.natural.language.service.api.NaturalLanguageEntity;
  *
  * @since 9.2
  */
-public class NaturalLanguageEntityImpl implements NaturalLanguageEntity{
+public class NaturalLanguageEntityImpl implements NaturalLanguageEntity {
 
 	protected String name;
 
@@ -82,23 +83,17 @@ public class NaturalLanguageEntityImpl implements NaturalLanguageEntity{
 	}
 
 	@Override
-	public Map<String, String> toMap() {
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("name", name);
-		map.put("type", type);
-		map.put("salience", "" + salience);
-		if (mentions != null) {
-			map.put("mentions", mentions.toString());
-		} else {
-			map.put("mentions", "");
-		}
-		if (metadata != null) {
-			map.put("metadata", metadata.toString());
-		} else {
-			map.put("metadata", "");
-		}
+	public JSONObject toJSON() throws JSONException {
 
-		return map;
+		JSONObject obj = new JSONObject();
+
+		obj.put("name", name);
+		obj.put("type", type);
+		obj.put("salience", salience);
+		obj.put("mentions", mentions);
+		obj.put("metadata", metadata);
+
+		return obj;
 	}
 
 }

@@ -21,6 +21,10 @@ package org.nuxeo.natural.language.service.api;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Represents a phrase in the text that is a known entity, such as a person, an
  * organization, or location. The API associates information, such as salience
@@ -85,20 +89,11 @@ public interface NaturalLanguageEntity {
 	public Map<String, String> getMetadata();
 
 	/**
-	 * Utility method to output an entity
 	 *
-	 * @return the string representation
+	 * @return the JSON representation of the sentence
+	 * @throws JSONException
 	 */
-	@Override
-	public String toString();
-
-
-	/**
-	 * Utility method to output an entity in a map
-	 *
-	 * @return the map representation
-	 */
-	public Map<String, String> toMap();
+	public JSONObject toJSON() throws JSONException;
 
 	/**
 	 * Static utility searching for the first entity with this name
@@ -116,6 +111,26 @@ public interface NaturalLanguageEntity {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Utility, to build a JSON Array from the list of sentences
+	 *
+	 * @param sentences
+	 * @return the JSON array representation of the sentences
+	 * @throws JSONException
+	 */
+	public static JSONArray entitiesToJSONArray(List<NaturalLanguageEntity> entities) throws JSONException {
+
+		JSONArray array = new JSONArray();
+
+		if (entities != null) {
+			for (NaturalLanguageEntity entity : entities) {
+				array.put(entity.toJSON());
+			}
+		}
+
+		return array;
 	}
 
 }

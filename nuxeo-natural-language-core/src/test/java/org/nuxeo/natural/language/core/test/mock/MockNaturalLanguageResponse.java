@@ -20,6 +20,8 @@ package org.nuxeo.natural.language.core.test.mock;
 
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.nuxeo.natural.language.service.api.NaturalLanguageEntity;
 import org.nuxeo.natural.language.service.api.NaturalLanguageResponse;
 import org.nuxeo.natural.language.service.api.NaturalLanguageSentence;
@@ -65,6 +67,11 @@ public class MockNaturalLanguageResponse implements NaturalLanguageResponse {
 
 	@Override
 	public Object getNativeObject() {
+		return null;
+	}
+
+	@Override
+	public JSONObject toJSON() throws JSONException {
 		return null;
 	}
 

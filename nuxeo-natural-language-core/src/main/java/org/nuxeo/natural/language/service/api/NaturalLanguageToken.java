@@ -18,7 +18,11 @@
  */
 package org.nuxeo.natural.language.service.api;
 
-import java.util.Map;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Represents the smallest syntactic building block of the text.
@@ -227,20 +231,30 @@ public interface NaturalLanguageToken {
 	public String getLemma();
 
 	/**
-	 * Utility method to output an entity as String
 	 *
-	 * @return the string representation
-	 * @since 9.2
+	 * @return the JSON representation of the sentence
+	 * @throws JSONException
 	 */
-	@Override
-	public String toString();
+	public JSONObject toJSON() throws JSONException;
 
 	/**
-	 * Utility method to output an entity as Map
+	 * Utility, to build a JSON Array from the list of sentences
 	 *
-	 * @return the string representation
-	 * @since 9.2
+	 * @param sentences
+	 * @return the JSON array representation of the sentences
+	 * @throws JSONException
 	 */
-	public Map<String, String> toMap();
+	public static JSONArray tokensToJSONArray(List<NaturalLanguageToken> tokens) throws JSONException {
+
+		JSONArray array = new JSONArray();
+
+		if (tokens != null) {
+			for (NaturalLanguageToken token : tokens) {
+				array.put(token.toJSON());
+			}
+		}
+
+		return array;
+	}
 
 }

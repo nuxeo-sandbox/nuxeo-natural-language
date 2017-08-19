@@ -162,7 +162,7 @@ public class NaturalLanguageImpl extends DefaultComponent implements NaturalLang
 		}
 
 		String text = extractRawText(blob);
-		return provider.processText(text, features, null);
+		return provider.processText(text, features, NaturalLanguageEncoding.UTF8);
 	}
 
 	@Override

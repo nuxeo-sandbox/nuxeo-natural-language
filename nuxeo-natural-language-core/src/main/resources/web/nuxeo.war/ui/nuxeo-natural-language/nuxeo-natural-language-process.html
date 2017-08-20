@@ -1,0 +1,155 @@
+<!--
+(C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors
+    Thibaud Arguillere
+-->
+<!--
+Natural Language Processing Dialog
+@group Nuxeo UI Elements
+@element nuxeo-natural-language-process
+-->
+
+<!-- "v1", keeping it simple: We always process the blob, if any
+     v2 (or 3, or 5... ;-) should save raw json result in a schema,
+     and when this dialog opens, gets the value after checking we have
+     the same blob than the one used originally (get the MD5). If it
+     is the same => just get the json, parse and display result. Else,
+     send a NLP request.
+-->
+<dom-module id="nuxeo-natural-language-process">
+  <template>
+  	<style>
+
+      paper-dialog {
+        width: 90%;
+        height: 90%;
+      }
+
+      paper-dialog h2 {
+        text-align: center;
+      }
+
+      .card-actions{
+        text-align: center;
+        padding-top: 1em;
+      }
+
+  	</style>
+
+  	<nuxeo-operation id="processDocument" input="[[document.uid]]" op="Services.NaturalLanguageDocumentOp"></nuxeo-operation>
+
+    <template is="dom-if" if="[[canDoNLP]]">
+      <paper-icon-button id="nlpProcess" src="images/nlp.png" on-tap="_toggleDialog" noink></paper-icon-button>
+      <paper-tooltip for="nlProcess">Natural Language Processing</paper-tooltip>
+    </template>
+
+    <paper-dialog id="nlpDialog"
+                  with-backdrop
+                  entry-animation="scale-up-animation"
+                  exit-animation="fade-out-animation"
+                  iron-overlay-opened="_runNLP">
+      <h2>Natural Language processing</h2>
+      <div class="horizontal align layout">
+        <paper-card class="layout vertical">
+        </paper-card>
+      </div>
+    </paper-dialog>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-natural-language-process',
+      behaviors: [Nuxeo.I18nBehavior, Nuxeo.FiltersBehavior],
+      properties: {
+      	document: {
+     	    type: Object,
+          value: null,
+          observer: '_documentChanged'
+        },
+        canDoNLP: {
+          type: Boolean,
+          value: false
+        }
+      },
+
+      _documentChanged: function(newValue, oldValue) {
+      	if(newValue !== undefined && newValue !== null) {
+
+        }
+        this._updateCanDoNLP();
+      },
+
+      // We don't handle Documents:
+      //    * With no file:content
+      //    * With the Picture, Video or Audio facet
+      _updateCanDoNLP: function() {
+
+        let ok = false;
+        let doc = this.document;
+
+        if(   doc !== null
+           && doc !== undefined
+           && doc.properties["file:content"] !== null
+           && doc.facets.indexOf("Picture") < 0
+           && doc.facets.indexOf("Video") < 0
+           && doc.facets.indexOf("Audio") < 0) {
+          ok = true;
+        }
+
+        if(ok !== this.canDoNLP) {
+          this.canDoNLP = ok;
+        }
+      },
+
+      _toggleDialog: function() {
+        this.$.nlpDialog.toggle();
+        this._runNLP();
+      },
+
+      _runNLP: function() {
+        let params = null;
+
+        debugger;
+
+        params = {};
+        params.features = ['DOCUMENT_SENTIMENT', 'ENTITIES']; //'SYNTAX'
+        params.outputVariable = "response";
+        //params.provider = ;
+        //params.xpath = ;
+
+        this.$.processDocument.params = params;
+        this.$.processDocument.execute().then(this._processDocumentSuccess).catch(this._processDocumentError);
+
+      },
+
+      _processDocumentSuccess: function(p1, p2, p3) {
+        debugger;
+      },
+
+      _processDocumentError: function(p1, p2, p3) {
+        debugger;
+      },
+
+      _close: function() {
+      	this.$.nlpDialog.close();
+      }
+
+
+    });
+  </script>
+</dom-module>
+
+

@@ -6,6 +6,8 @@ Bundle-ClassPath: .
 Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
 Bundle-Vendor: nuxeo.natural.language
-Nuxeo-Component: OSGI-INF/natural-language-service.xml,OSGI-INF/operat
- ions-contrib.xml
+Nuxeo-Component: OSGI-INF/natural-language-
+ service.xml,OSGI-INF/operations-contrib.xm
+ l,OSGI-INF/nuxeo-natural-language-webresou
+ rces-contrib.xml
 

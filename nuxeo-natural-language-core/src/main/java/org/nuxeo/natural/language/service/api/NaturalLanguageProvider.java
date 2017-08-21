@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
+
 /**
  * A Natural Language provider is a wrapper that encapsulates calls to a given
  * Natural Language service
@@ -35,6 +37,11 @@ public interface NaturalLanguageProvider {
 
 	/**
 	 *
+	 * The NuxeoException should encapsulate any exception:
+	 * IO/GeneralSecurity/etc. but also provider-specific errors such a an
+	 * unsupported language (i.e. an error when the string is written in a
+	 * language not supported by the provider, like latin for Google)
+	 *
 	 * @param text
 	 *            Text to analyze
 	 * @param features
@@ -42,10 +49,14 @@ public interface NaturalLanguageProvider {
 	 * @param encoding
 	 *            Encoding to use. Can be {@code null}. Possible values are
 	 *            "UTF8", "UTF16" and "UTF32"
+	 * @throws IOException
+	 * @throws GeneralSecurityException
+	 * @throws IllegalStateException
+	 * @throws NuxeoException
 	 * @return a {@link NaturalLanguageResponse} object
 	 */
 	NaturalLanguageResponse processText(String text, List<NaturalLanguageFeature> features,
-			NaturalLanguageEncoding encoding) throws IOException, GeneralSecurityException, IllegalStateException;
+			NaturalLanguageEncoding encoding) throws NuxeoException;
 
 	/**
 	 * @return The list of feature supported by the provider

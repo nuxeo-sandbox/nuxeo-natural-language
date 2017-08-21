@@ -18,12 +18,11 @@
  */
 package org.nuxeo.natural.language.core.test.mock;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.natural.language.service.api.NaturalLanguageEncoding;
 import org.nuxeo.natural.language.service.api.NaturalLanguageFeature;
 import org.nuxeo.natural.language.service.api.NaturalLanguageProvider;
@@ -43,7 +42,7 @@ public class MockNaturalLanguageProvider implements NaturalLanguageProvider {
 
 	@Override
 	public NaturalLanguageResponse processText(String text, List<NaturalLanguageFeature> features,
-			NaturalLanguageEncoding encoding) throws IOException, GeneralSecurityException, IllegalStateException {
+			NaturalLanguageEncoding encoding) throws NuxeoException {
 		return new MockNaturalLanguageResponse();
 	}
 

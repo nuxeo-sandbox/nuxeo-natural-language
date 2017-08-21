@@ -19,8 +19,6 @@
 package org.nuxeo.natural.language.service.impl;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.natural.language.service.api.NaturalLanguage;
 import org.nuxeo.natural.language.service.api.NaturalLanguageEncoding;
@@ -119,7 +118,7 @@ public class NaturalLanguageImpl extends DefaultComponent implements NaturalLang
 
 	@Override
 	public NaturalLanguageResponse processText(String providerName, String text, List<NaturalLanguageFeature> features,
-			NaturalLanguageEncoding encoding) throws IOException, GeneralSecurityException, IllegalStateException {
+			NaturalLanguageEncoding encoding) throws NuxeoException {
 
 		if (text == null) {
 			throw new IllegalArgumentException("Input text cannot be null");
@@ -136,19 +135,24 @@ public class NaturalLanguageImpl extends DefaultComponent implements NaturalLang
 		return provider.processText(text, features, encoding);
 	}
 
-	protected String extractRawText(Blob blob) throws UnsupportedEncodingException, IOException {
+	protected String extractRawText(Blob blob) {
 
-		SimpleBlobHolder blobHolder = new SimpleBlobHolder(blob);
-		ConversionService conversionService = Framework.getLocalService(ConversionService.class);
-		BlobHolder resultBlob = conversionService.convert("any2text", blobHolder, null);
-		String text = new String(resultBlob.getBlob().getByteArray(), "UTF-8");
+		try {
+			SimpleBlobHolder blobHolder = new SimpleBlobHolder(blob);
+			ConversionService conversionService = Framework.getLocalService(ConversionService.class);
+			BlobHolder resultBlob = conversionService.convert("any2text", blobHolder, null);
+			String text;
+			text = new String(resultBlob.getBlob().getByteArray(), "UTF-8");
 
-		return text;
+			return text;
+		} catch (ConversionException | IOException e) {
+			throw new NuxeoException(e);
+		}
 	}
 
 	@Override
 	public NaturalLanguageResponse processBlob(String providerName, Blob blob, List<NaturalLanguageFeature> features)
-			throws IOException, GeneralSecurityException {
+			throws NuxeoException {
 		if (blob == null) {
 			throw new IllegalArgumentException("Input Blob cannot be null");
 		} else if (features == null || features.size() == 0) {
@@ -167,7 +171,7 @@ public class NaturalLanguageImpl extends DefaultComponent implements NaturalLang
 
 	@Override
 	public NaturalLanguageResponse processDocument(String providerName, DocumentModel doc, String xpath,
-			List<NaturalLanguageFeature> features) throws IOException, GeneralSecurityException {
+			List<NaturalLanguageFeature> features) throws NuxeoException {
 
 		if (doc == null) {
 			throw new IllegalArgumentException("Input DocumentModel cannot be null");

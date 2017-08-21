@@ -19,8 +19,6 @@
  */
 package org.nuxeo.natural.language.operations;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +32,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.StringList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.natural.language.service.api.NaturalLanguage;
 import org.nuxeo.natural.language.service.api.NaturalLanguageEncoding;
 import org.nuxeo.natural.language.service.api.NaturalLanguageFeature;
@@ -79,6 +78,7 @@ public class NaturalLanguageOnStringOp {
 		}
 
 		try {
+
 			NaturalLanguageEncoding nlEncoding;
 			if (StringUtils.isEmpty(encoding)) {
 				nlEncoding = null;
@@ -87,13 +87,25 @@ public class NaturalLanguageOnStringOp {
 			}
 			response = naturalLanguageService.processText(provider, text, featureList, nlEncoding);
 			ctx.put(outputVariable, response);
-		} catch (IOException | GeneralSecurityException e) {
+
+		} catch (NuxeoException e) {
 			if (StringUtils.isEmpty(provider)) {
-				log.warn("Call to the Natural Language API failed for the default provider " + provider, e);
+				log.error("Call to the Natural Language API failed for the default provider:\n" + e.getMessage());
 			} else {
-				log.warn("Call to the Natural Language API failed for provider " + provider, e);
+				log.error("Call to the Natural Language API failed for provider " + provider + ":\n" + e.getMessage());
 			}
+			throw new NuxeoException("Call to the Natural Language API failed: ", e);
+		} catch (Exception e) {
+			// Still catching Exception to make sure we handle even new kind or
+			// unexpected error triggered by providers
+			if (StringUtils.isEmpty(provider)) {
+				log.error("Call to the Natural Language API failed for the default provider:\n" + e.getMessage());
+			} else {
+				log.error("Call to the Natural Language API failed for provider " + provider + ":\n" + e.getMessage());
+			}
+			throw new NuxeoException(e);
 		}
+
 		return text;
 	}
 

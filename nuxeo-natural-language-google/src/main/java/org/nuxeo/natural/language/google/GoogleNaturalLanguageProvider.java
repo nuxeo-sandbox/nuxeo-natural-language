@@ -106,35 +106,47 @@ public class GoogleNaturalLanguageProvider implements NaturalLanguageProvider {
 
 	@Override
 	public NaturalLanguageResponse processText(String text, List<NaturalLanguageFeature> features,
-			NaturalLanguageEncoding encoding) throws IOException {
+			NaturalLanguageEncoding encoding) throws NuxeoException {
 
-		LanguageServiceClient language = getLanguageServiceClient();
+		try {
 
-		AnnotateTextRequest request;
-		AnnotateTextRequest.Builder requestBuilder = AnnotateTextRequest.newBuilder();
+			LanguageServiceClient language = getLanguageServiceClient();
 
-		Document.Builder docBuilder = Document.newBuilder();
-		docBuilder.setContent(text).setType(Type.PLAIN_TEXT);
-		requestBuilder.setDocument(docBuilder.build());
-		if (encoding != null) {
-			requestBuilder.setEncodingTypeValue(encoding.getNumber());
+			AnnotateTextRequest request;
+			AnnotateTextRequest.Builder requestBuilder = AnnotateTextRequest.newBuilder();
+
+			Document.Builder docBuilder = Document.newBuilder();
+			docBuilder.setContent(text).setType(Type.PLAIN_TEXT);
+			requestBuilder.setDocument(docBuilder.build());
+			if (encoding != null) {
+				requestBuilder.setEncodingTypeValue(encoding.getNumber());
+			}
+
+			boolean doEntities = features.contains(NaturalLanguageFeature.ENTITIES);
+			boolean doSentiment = features.contains(NaturalLanguageFeature.DOCUMENT_SENTIMENT);
+			boolean doSyntax = features.contains(NaturalLanguageFeature.SYNTAX);
+			Features requestFeatures = Features.newBuilder().setExtractDocumentSentiment(doSentiment)
+					.setExtractEntities(doEntities).setExtractSyntax(doSyntax).build();
+
+			requestBuilder.setFeatures(requestFeatures);
+
+			request = requestBuilder.build();
+			AnnotateTextResponse response;
+			response = language.annotateText(request);
+
+			GoogleNaturalLanguageResponse googleResponse = new GoogleNaturalLanguageResponse(response);
+
+			return googleResponse;
+
+		} catch (IOException e) {
+			throw new NuxeoException(e);
+		} catch (Exception e) {
+			String coucou = "";
+			if(StringUtils.isNotBlank(coucou)) {
+
+			}
+			throw new NuxeoException(e);
 		}
-
-		boolean doEntities = features.contains(NaturalLanguageFeature.ENTITIES);
-		boolean doSentiment = features.contains(NaturalLanguageFeature.DOCUMENT_SENTIMENT);
-		boolean doSyntax = features.contains(NaturalLanguageFeature.SYNTAX);
-		Features requestFeatures = Features.newBuilder().setExtractDocumentSentiment(doSentiment)
-				.setExtractEntities(doEntities).setExtractSyntax(doSyntax).build();
-
-		requestBuilder.setFeatures(requestFeatures);
-
-		request = requestBuilder.build();
-		AnnotateTextResponse response;
-		response = language.annotateText(request);
-
-		GoogleNaturalLanguageResponse gnlr = new GoogleNaturalLanguageResponse(response);
-
-		return gnlr;
 	}
 
 	@Override

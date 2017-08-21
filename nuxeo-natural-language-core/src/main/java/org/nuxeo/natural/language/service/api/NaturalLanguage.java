@@ -19,13 +19,12 @@
  */
 package org.nuxeo.natural.language.service.api;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * A service that performs Natural Language tasks like text analysis, sentiment
@@ -38,6 +37,12 @@ public interface NaturalLanguage {
 	public static String DEFAULT_PROVIDER_NAME = "google";
 
 	/**
+	 * Send the text to the provider.
+	 *
+	 * The NuxeoException should encapsulate any exception:
+	 * IO/GeneralSecurity/etc. but also provider-specific errors such a an
+	 * unsupported language (i.e. an error when the string is written in a
+	 * language not supported by the provider, like latin for Google)
 	 *
 	 * @param provider
 	 *            Provider to use. Can be {@code null} (using default provider
@@ -49,12 +54,19 @@ public interface NaturalLanguage {
 	 * @param encoding
 	 *            Encoding to use. Can be {@code null}
 	 * @return a {@link NaturalLanguageResponse} object
+	 * @throws NuxeoException
 	 * @since 9.2
 	 */
 	NaturalLanguageResponse processText(String providerName, String text, List<NaturalLanguageFeature> features,
-			NaturalLanguageEncoding encoding) throws IOException, GeneralSecurityException, IllegalStateException;
+			NaturalLanguageEncoding encoding) throws NuxeoException;
 
 	/**
+	 * Extract the text form the blob and send it to the provider.
+	 *
+	 * The NuxeoException should encapsulate any exception:
+	 * IO/GeneralSecurity/etc. but also provider-specific errors such a an
+	 * unsupported language (i.e. an error when the string is written in a
+	 * language not supported by the provider, like latin for Google)
 	 *
 	 * @param provider
 	 *            Provider to use. Can be {@code null} (using default provider
@@ -64,12 +76,19 @@ public interface NaturalLanguage {
 	 * @param features
 	 *            Features to request from the service
 	 * @return a {@link NaturalLanguageResponse} object
+	 * @throws NuxeoException
 	 * @since 9.2
 	 */
 	NaturalLanguageResponse processBlob(String provider, Blob blob, List<NaturalLanguageFeature> features)
-			throws IOException, GeneralSecurityException;
+			throws NuxeoException;
 
 	/**
+	 * Extract the text from the blob at xpath and send it to the provider.
+	 *
+	 * The NuxeoException should encapsulate any exception:
+	 * IO/GeneralSecurity/etc. but also provider-specific errors such a an
+	 * unsupported language (i.e. an error when the string is written in a
+	 * language not supported by the provider, like latin for Google)
 	 *
 	 * @param provider
 	 *            Provider to use. Can be {@code null} (using default provider
@@ -82,10 +101,11 @@ public interface NaturalLanguage {
 	 * @param features
 	 *            Features to request from the service
 	 * @return a {@link NaturalLanguageResponse} object
+	 * @throws NuxeoException
 	 * @since 9.2
 	 */
 	NaturalLanguageResponse processDocument(String providerName, DocumentModel doc, String xpath,
-			List<NaturalLanguageFeature> features) throws IOException, GeneralSecurityException;
+			List<NaturalLanguageFeature> features) throws NuxeoException;
 
 	/**
 	 * @return The name of default provider or {@code null} is not found

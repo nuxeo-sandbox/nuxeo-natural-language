@@ -6,11 +6,16 @@
   <extension target="org.nuxeo.natural.language.service" point="configuration">
     <configuration>
       <defaultProviderName>mock</defaultProviderName>
+      <doNotAutoAnalyze>
+        <facet>Picture</facet>
+        <facet>Video</facet>
+        <facet>Audio</facet>
+      </doNotAutoAnalyze>
     </configuration>
   </extension>
 
   <extension point="provider" target="org.nuxeo.natural.language.service">
-    <provider class="org.nuxeo.natural.language.core.test.mock.MockNaturalLanguageProvider" name="mock"/>
+    <provider class="org.nuxeo.natural.language.core.test.mock.MockNaturalLanguageProvider" name="mock" />
   </extension>
 
 </component>

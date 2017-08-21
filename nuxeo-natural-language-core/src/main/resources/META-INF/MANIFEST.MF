@@ -7,5 +7,6 @@ Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
 Bundle-Vendor: nuxeo.natural.language
 Nuxeo-Component: OSGI-INF/natural-language-service.xml,OSGI-INF/operat
- ions-contrib.xml
+ ions-contrib.xml,OSGI-INF/default-chains-contrib.xml,OSGI-INF/natural
+ -language-types-contrib.xml,OSGI-INF/listener-contrib.xml
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/NaturalLanguage/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/NaturalLanguage/">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:element name="json" type="xs:string"/>
+  <xs:element name="source_digest" type="xs:string"/>
+</xs:schema>

@@ -22,12 +22,19 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.natural.language.core.test.mock.MockNaturalLanguageProvider;
 import org.nuxeo.natural.language.core.test.mock.MockNaturalLanguageResponse;
 import org.nuxeo.natural.language.service.api.NaturalLanguage;
@@ -38,14 +45,22 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features({ PlatformFeature.class })
+@Features(AutomationFeature.class)
+@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy("nuxeo-natural-language-core")
 @LocalDeploy({ "nuxeo-natural-language:OSGI-INF/mock-provider-contrib.xml" })
-public class TestTestNaturalLanguageService {
+public class TestNaturalLanguageService {
+
+	@Inject
+	CoreSession coreSession;
+
+	@Inject
+	protected EventService eventService;
 
 	@Inject
 	protected NaturalLanguage naturalLanguage;
@@ -84,6 +99,50 @@ public class TestTestNaturalLanguageService {
 		NaturalLanguageProvider provider = providers.get(MockNaturalLanguageProvider.NAME);
 		assertNotNull(provider);
 		assertTrue(provider instanceof MockNaturalLanguageProvider);
+
+	}
+
+	@Test
+	public void testDefaultAutoAnalyze() {
+		assertFalse(naturalLanguage.isAutoAnalyze());
+	}
+
+	@Test
+	public void testFacetAndSchema() {
+
+		DocumentModel doc = coreSession.createDocumentModel("/", "test-doc", "File");
+		doc.setPropertyValue("dc:title", "tes-doc");
+		doc = coreSession.createDocument(doc);
+
+		coreSession.save();
+		TransactionHelper.commitOrRollbackTransaction();
+		TransactionHelper.startTransaction();
+
+		eventService.waitForAsyncCompletion();
+
+		assertFalse(doc.hasFacet(NaturalLanguage.FACET_NAME));
+		boolean ok = doc.addFacet(NaturalLanguage.FACET_NAME);
+		assertTrue(ok);
+
+		assertTrue(doc.hasFacet(NaturalLanguage.FACET_NAME));
+		assertTrue(doc.hasSchema(NaturalLanguage.SCHEMA_NAME));
+
+	}
+
+	@Test
+	public void testAutoAnalyzeConfig() {
+
+		// We don't have doc types in the mock xml config. service
+		String[] excludedDocTypes = naturalLanguage.getAutoAnalyzeExcludedDocTypes();
+		assertTrue(excludedDocTypes == null || excludedDocTypes.length == 0);
+
+		String[] excludedFacets = naturalLanguage.getAutoAnalyzeExcludedFacets();
+		assertTrue(excludedFacets != null && excludedFacets.length == 3);
+
+		ArrayList<String> excludedFacetsAsLIst = new ArrayList<String>(Arrays.asList(excludedFacets));
+		assertTrue(excludedFacetsAsLIst.indexOf("Picture") > -1);
+		assertTrue(excludedFacetsAsLIst.indexOf("Video") > -1);
+		assertTrue(excludedFacetsAsLIst.indexOf("Audio") > -1);
 
 	}
 

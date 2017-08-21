@@ -24,6 +24,14 @@
   <extension target="org.nuxeo.natural.language.service" point="configuration">
     <configuration>
       <defaultProviderName>${org.nuxeo.natural.language.default.provider:=}</defaultProviderName>
+      <defaultDocumentProcessingChainName>javascript.NaturalLanguageDefaultDocumentProcessing
+      </defaultDocumentProcessingChainName>
+      <autoAnalyze>${org.nuxeo.natural.language.autoanalyze:=}</autoAnalyze>
+      <doNotAutoAnalyze>
+        <facet>Picture</facet>
+        <facet>Video</facet>
+        <facet>Audio</facet>
+      </doNotAutoAnalyze>
     </configuration>
   </extension>
 

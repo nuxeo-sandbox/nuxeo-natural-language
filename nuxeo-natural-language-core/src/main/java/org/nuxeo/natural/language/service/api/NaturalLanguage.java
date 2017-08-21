@@ -34,7 +34,17 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  */
 public interface NaturalLanguage {
 
-	public static String DEFAULT_PROVIDER_NAME = "google";
+	public static final String DEFAULT_PROVIDER_NAME = "google";
+
+	public static final String DEFAULT_PROCESSING_CHAIN = "javascript.NaturalLanguageDefaultDocumentProcessing";
+
+	public static final String SCHEMA_NAME = "NaturalLanguage";
+
+	public static final String FACET_NAME = "NaturalLanguage";
+
+	public static final String XPATH_JSON = "natural_language:json";
+
+	public static final String XPATH_SOURCE_DIGEST = "natural_language:source_digest";
 
 	/**
 	 * Send the text to the provider.
@@ -55,7 +65,6 @@ public interface NaturalLanguage {
 	 *            Encoding to use. Can be {@code null}
 	 * @return a {@link NaturalLanguageResponse} object
 	 * @throws NuxeoException
-	 * @since 9.2
 	 */
 	NaturalLanguageResponse processText(String providerName, String text, List<NaturalLanguageFeature> features,
 			NaturalLanguageEncoding encoding) throws NuxeoException;
@@ -77,7 +86,6 @@ public interface NaturalLanguage {
 	 *            Features to request from the service
 	 * @return a {@link NaturalLanguageResponse} object
 	 * @throws NuxeoException
-	 * @since 9.2
 	 */
 	NaturalLanguageResponse processBlob(String provider, Blob blob, List<NaturalLanguageFeature> features)
 			throws NuxeoException;
@@ -102,14 +110,12 @@ public interface NaturalLanguage {
 	 *            Features to request from the service
 	 * @return a {@link NaturalLanguageResponse} object
 	 * @throws NuxeoException
-	 * @since 9.2
 	 */
 	NaturalLanguageResponse processDocument(String providerName, DocumentModel doc, String xpath,
 			List<NaturalLanguageFeature> features) throws NuxeoException;
 
 	/**
 	 * @return The name of default provider or {@code null} is not found
-	 * @since 9.2
 	 */
 	String getDefaultProviderName();
 
@@ -117,14 +123,30 @@ public interface NaturalLanguage {
 	 * @param name
 	 *            The name of the provider to return
 	 * @return The provider object or {@code null} is not found
-	 * @since 9.2
 	 */
 	NaturalLanguageProvider getProvider(String name);
 
 	/**
 	 * @return all registered providers
-	 * @since 9.2
 	 */
 	Map<String, NaturalLanguageProvider> getProviders();
+
+	/**
+	 *
+	 * @return true if documents must be analyze in a listener automatically
+	 */
+	boolean isAutoAnalyze();
+
+	/**
+	 *
+	 * @return the automation chain used to process documents when isAutoAnalyze
+	 *         is true
+	 */
+	String getDefaultDocumentProcessingChainName();
+
+
+	public String[] getAutoAnalyzeExcludedFacets();
+
+	public String[] getAutoAnalyzeExcludedDocTypes();
 
 }

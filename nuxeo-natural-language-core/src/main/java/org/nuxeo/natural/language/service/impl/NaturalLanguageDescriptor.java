@@ -21,6 +21,7 @@ package org.nuxeo.natural.language.service.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.natural.language.service.api.NaturalLanguage;
 
@@ -30,10 +31,38 @@ public class NaturalLanguageDescriptor {
 	@XNode("defaultProviderName")
 	protected String defaultProviderName;
 
+	@XNode("defaultDocumentProcessingChainName")
+	protected String defaultDocumentProcessingChainName = NaturalLanguage.DEFAULT_PROCESSING_CHAIN;
+
+	@XNode("autoAnalyze")
+	protected Boolean autoAnalyze = false;
+
+	@XNodeList(value = "doNotAutoAnalyze/facet", type = String[].class, componentType = String.class)
+    protected String[] autoAnalyzeExcludedFacets;
+
+	@XNodeList(value = "doNotAutoAnalyze/type", type = String[].class, componentType = String.class)
+    protected String[] autoAnalyzeExcludedDocTypes;
+
 	public String getDefaultProviderName() {
 		if (StringUtils.isBlank(defaultProviderName)) {
 			return NaturalLanguage.DEFAULT_PROVIDER_NAME;
 		}
 		return defaultProviderName;
 	}
+
+	public String getDefaultDocumentProcessingChainName() {
+		return defaultDocumentProcessingChainName;
+	}
+
+	public boolean isAutoAnalyze() {
+		return autoAnalyze;
+	}
+
+	public String[] getAutoAnalyzeExcludedFacets() {
+        return autoAnalyzeExcludedFacets;
+    }
+
+	public String[] getAutoAnalyzeExcludedDocTypes() {
+        return autoAnalyzeExcludedDocTypes;
+    }
 }

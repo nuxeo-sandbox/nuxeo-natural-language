@@ -212,4 +212,24 @@ public class NaturalLanguageImpl extends DefaultComponent implements NaturalLang
 		return providers;
 	}
 
+	@Override
+	public boolean isAutoAnalyze() {
+		return config.isAutoAnalyze();
+	}
+
+	@Override
+	public String getDefaultDocumentProcessingChainName() {
+		return config.getDefaultDocumentProcessingChainName();
+	}
+
+	@Override
+	public String[] getAutoAnalyzeExcludedFacets() {
+		return config.getAutoAnalyzeExcludedFacets();
+	}
+
+	@Override
+	public String[] getAutoAnalyzeExcludedDocTypes() {
+		return config.getAutoAnalyzeExcludedDocTypes();
+	}
+
 }

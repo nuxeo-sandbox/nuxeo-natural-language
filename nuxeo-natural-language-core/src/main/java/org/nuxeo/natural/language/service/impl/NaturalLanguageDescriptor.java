@@ -19,6 +19,7 @@
  */
 package org.nuxeo.natural.language.service.impl;
 
+import java.util.ArrayList;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -29,7 +30,7 @@ import org.nuxeo.natural.language.service.api.NaturalLanguage;
 public class NaturalLanguageDescriptor {
 
 	@XNode("defaultProviderName")
-	protected String defaultProviderName;
+	protected String defaultProviderName = NaturalLanguage.DEFAULT_PROVIDER_NAME;
 
 	@XNode("defaultDocumentProcessingChainName")
 	protected String defaultDocumentProcessingChainName = NaturalLanguage.DEFAULT_PROCESSING_CHAIN;
@@ -37,11 +38,11 @@ public class NaturalLanguageDescriptor {
 	@XNode("autoAnalyze")
 	protected Boolean autoAnalyze = false;
 
-	@XNodeList(value = "doNotAutoAnalyze/facet", type = String[].class, componentType = String.class)
-    protected String[] autoAnalyzeExcludedFacets;
+	@XNodeList(value = "doNotAnalyzeIf/facet", type = ArrayList.class, componentType = String.class)
+	protected ArrayList<String> autoAnalyzeExcludedFacets;
 
-	@XNodeList(value = "doNotAutoAnalyze/type", type = String[].class, componentType = String.class)
-    protected String[] autoAnalyzeExcludedDocTypes;
+	@XNodeList(value = "doNotAnalyzeIf/type", type = ArrayList.class, componentType = String.class)
+	protected ArrayList<String> autoAnalyzeExcludedDocTypes;
 
 	public String getDefaultProviderName() {
 		if (StringUtils.isBlank(defaultProviderName)) {
@@ -58,11 +59,11 @@ public class NaturalLanguageDescriptor {
 		return autoAnalyze;
 	}
 
-	public String[] getAutoAnalyzeExcludedFacets() {
-        return autoAnalyzeExcludedFacets;
-    }
+	public ArrayList<String> getAnalyzeExcludedFacets() {
+		return autoAnalyzeExcludedFacets;
+	}
 
-	public String[] getAutoAnalyzeExcludedDocTypes() {
-        return autoAnalyzeExcludedDocTypes;
-    }
+	public ArrayList<String> getAnalyzeExcludedDocTypes() {
+		return autoAnalyzeExcludedDocTypes;
+	}
 }

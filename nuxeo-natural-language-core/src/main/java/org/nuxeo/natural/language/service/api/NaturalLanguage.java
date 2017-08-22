@@ -19,6 +19,7 @@
  */
 package org.nuxeo.natural.language.service.api;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +46,8 @@ public interface NaturalLanguage {
 	public static final String XPATH_JSON = "natural_language:json";
 
 	public static final String XPATH_SOURCE_DIGEST = "natural_language:source_digest";
+
+	public static final String EVENT_DOCUMENT_HANDLED = "naturalLanguageDocumentHandled";
 
 	/**
 	 * Send the text to the provider.
@@ -144,9 +147,30 @@ public interface NaturalLanguage {
 	 */
 	String getDefaultDocumentProcessingChainName();
 
+	/**
+	 *
+	 * @return the list of facets that force a document to _not_ be processed
+	 */
+	public ArrayList<String> getAnalyzeExcludedFacets();
 
-	public String[] getAutoAnalyzeExcludedFacets();
+	/**
+	 *
+	 * @return the list of Document Types that force a document to _not_ be
+	 *         processed
+	 */
+	public ArrayList<String> getAnalyzeExcludedDocTypes();
 
-	public String[] getAutoAnalyzeExcludedDocTypes();
+	/**
+	 * Checks if the document type is in the list of excludedDocTypes or if it
+	 * has facet that is in the list of excludedFactes. If yes, return
+	 * <code>false</code>, else return <code>true</code>
+	 *
+	 * Notice the implem,tatiuon can follow another logic and add more
+	 * conditions
+	 *
+	 * @param doc
+	 * @return true is the Document can be processed
+	 */
+	boolean canProcessDocument(DocumentModel doc);
 
 }

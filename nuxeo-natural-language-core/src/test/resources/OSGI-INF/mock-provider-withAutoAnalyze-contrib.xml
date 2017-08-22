@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.natural.language.core.test.mock.with.analyze">
+
+  <require>org.nuxeo.natural.language.service</require>
+
+  <extension target="org.nuxeo.natural.language.service" point="configuration">
+    <configuration>
+      <defaultProviderName>mock</defaultProviderName>
+      <autoAnalyze>true</autoAnalyze>
+      <doNotAnalyzeIf>
+        <facet>Picture</facet>
+        <facet>Video</facet>
+        <facet>Audio</facet>
+      </doNotAnalyzeIf>
+    </configuration>
+  </extension>
+
+  <extension point="provider" target="org.nuxeo.natural.language.service">
+    <provider class="org.nuxeo.natural.language.core.test.mock.MockNaturalLanguageProvider" name="mock" />
+  </extension>
+
+</component>

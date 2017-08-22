@@ -9,7 +9,8 @@
       <script><![CDATA[/* This default mapper:
         - Checks only DOCUMENT_SENTIMENT and ENTITIES, not SYNTAX
         - Save the result as raw JSON String (not complex multivalued)
-        - Is optimized: If the API hasalready  been called for the same blob, just do nothing.
+        - ASSUMES IT IS CALLED FROM THE LISTENER (org.nuxeo.natural.language.service.impl.NaturalLanguageListener)
+          which has already checked the document could be analyze (or requires the NaturalLanguage info - facet - to be reset
 */
 function run(input, params) {
   
@@ -17,14 +18,20 @@ function run(input, params) {
   
   blob = input["file:content"];
   
-  // We remove the facet and its schema if the blob is empty or it's not a document we must handle
-  // (Trying to extract the full text of a Video or an audio will fail in all cases, etc.)
-  if(blob === null || input.hasFacet("Picture") || input.hasFacet("Video") || input.hasFacet("Audio")) {
+  Console.log("COUCOU");
+  
+  // So. We assume the caller has check the document is not in the exlucedDocTypes
+  // and does not have a facet in the exludedFacets (see the service XML declaration)
+  
+  // We remove the facet and its schema if the blob is empty
+  if(blob === null) {
     if(input.hasFacet("NaturalLanguage")) {
       input = Document.RemoveFacet(input, {'facet': "NaturalLanguage"});
     }
     return input;
   }
+  
+  Console.log("KIKI");
   
   // So, the blob is not null. Let's check if we have the schema and if
   // the Natural Language has been processed on the exact same blob already
@@ -32,6 +39,8 @@ function run(input, params) {
     // No need to recompute
     return input;
   }
+  
+  Console.log("KOKO");
   
   ok = false;
   try {
@@ -48,18 +57,28 @@ function run(input, params) {
     Console.log("\nError when calling the Natural Language API:\n" + error);
   }
   
+  Console.log("LILI");
+  
   if(ok) {    
+    Console.log("LALA");
+  
     response = ctx.response;
     
     if(!input.hasFacet("NaturalLanguage")) {
       // "save" parameter available only starting with FT 9.3. Will be ignored with previous
       // versions (and the document is then always saved during this call)
+      Console.log("LULU");
       input = Document.AddFacet(input, {'facet': "NaturalLanguage", "save": false});
+      Console.log("LYLY");
     }
-       
-    input["natural_language:json"] = "" + response.toJSON();    
+    
+    Console.log("POPO");
+    input["natural_language:json"] = "" + response.toJSON();
+    Console.log("PIPI");
     input["natural_language:source_digest"] = blob.getDigest();
+    Console.log("PUPU");
     input = Document.Save(input, {});
+    Console.log("DONE");
   }
   
   return input;

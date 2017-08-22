@@ -33,7 +33,11 @@ import org.nuxeo.natural.language.service.api.NaturalLanguageToken;
  */
 public class MockNaturalLanguageResponse implements NaturalLanguageResponse {
 
-    public static final String LANGUAGE = "en";
+	public static final String LANGUAGE = "en";
+
+	public static final float SCORE = 0.5f;
+
+	public static final float MAGNITUDE = 0.3f;
 
 	@Override
 	public String getLanguage() {
@@ -42,12 +46,12 @@ public class MockNaturalLanguageResponse implements NaturalLanguageResponse {
 
 	@Override
 	public Float getSentimentScore() {
-		return null;
+		return SCORE;
 	}
 
 	@Override
 	public Float getSentimentMagnitude() {
-		return null;
+		return MAGNITUDE;
 	}
 
 	@Override
@@ -72,7 +76,12 @@ public class MockNaturalLanguageResponse implements NaturalLanguageResponse {
 
 	@Override
 	public JSONObject toJSON() throws JSONException {
-		return null;
+		JSONObject obj = new JSONObject();
+		obj.put("language", LANGUAGE);
+		obj.put("score", SCORE);
+		obj.put("magnitude", MAGNITUDE);
+
+		return obj;
 	}
 
 }

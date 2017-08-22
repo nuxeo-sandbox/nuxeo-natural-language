@@ -22,8 +22,8 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -133,16 +133,14 @@ public class TestNaturalLanguageService {
 	public void testAutoAnalyzeConfig() {
 
 		// We don't have doc types in the mock xml config. service
-		String[] excludedDocTypes = naturalLanguage.getAutoAnalyzeExcludedDocTypes();
-		assertTrue(excludedDocTypes == null || excludedDocTypes.length == 0);
+		List<String> excludedDocTypes = naturalLanguage.getAnalyzeExcludedDocTypes();
+		assertTrue(excludedDocTypes == null || excludedDocTypes.size() == 0);
 
-		String[] excludedFacets = naturalLanguage.getAutoAnalyzeExcludedFacets();
-		assertTrue(excludedFacets != null && excludedFacets.length == 3);
-
-		ArrayList<String> excludedFacetsAsLIst = new ArrayList<String>(Arrays.asList(excludedFacets));
-		assertTrue(excludedFacetsAsLIst.indexOf("Picture") > -1);
-		assertTrue(excludedFacetsAsLIst.indexOf("Video") > -1);
-		assertTrue(excludedFacetsAsLIst.indexOf("Audio") > -1);
+		List<String> excludedFacets = naturalLanguage.getAnalyzeExcludedFacets();
+		assertTrue(excludedFacets != null && excludedFacets.size() == 3);
+		assertTrue(excludedFacets.indexOf("Picture") > -1);
+		assertTrue(excludedFacets.indexOf("Video") > -1);
+		assertTrue(excludedFacets.indexOf("Audio") > -1);
 
 	}
 

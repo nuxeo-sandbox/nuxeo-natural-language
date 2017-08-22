@@ -34,11 +34,11 @@ import org.nuxeo.natural.language.service.api.NaturalLanguageResponse;
  */
 public class MockNaturalLanguageProvider implements NaturalLanguageProvider {
 
-    public static final String NAME = "mock";
+	public static final String NAME = "mock";
 
-    public MockNaturalLanguageProvider(Map<String, String> parameters) {
+	public MockNaturalLanguageProvider(Map<String, String> parameters) {
 
-    }
+	}
 
 	@Override
 	public NaturalLanguageResponse processText(String text, List<NaturalLanguageFeature> features,

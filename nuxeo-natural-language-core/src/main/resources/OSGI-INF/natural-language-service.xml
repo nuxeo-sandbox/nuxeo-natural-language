@@ -27,11 +27,11 @@
       <defaultDocumentProcessingChainName>javascript.NaturalLanguageDefaultDocumentProcessing
       </defaultDocumentProcessingChainName>
       <autoAnalyze>${org.nuxeo.natural.language.autoanalyze:=}</autoAnalyze>
-      <doNotAutoAnalyze>
+      <doNotAnalyzeIf>
         <facet>Picture</facet>
         <facet>Video</facet>
         <facet>Audio</facet>
-      </doNotAutoAnalyze>
+      </doNotAnalyzeIf>
     </configuration>
   </extension>
 

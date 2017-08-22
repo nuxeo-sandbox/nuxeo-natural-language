@@ -19,9 +19,11 @@
 package org.nuxeo.natural.language.service.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -223,13 +225,64 @@ public class NaturalLanguageImpl extends DefaultComponent implements NaturalLang
 	}
 
 	@Override
-	public String[] getAutoAnalyzeExcludedFacets() {
-		return config.getAutoAnalyzeExcludedFacets();
+	public ArrayList<String> getAnalyzeExcludedFacets() {
+		return config.getAnalyzeExcludedFacets();
 	}
 
 	@Override
-	public String[] getAutoAnalyzeExcludedDocTypes() {
-		return config.getAutoAnalyzeExcludedDocTypes();
+	public ArrayList<String> getAnalyzeExcludedDocTypes() {
+		return config.getAnalyzeExcludedDocTypes();
+	}
+
+	@Override
+	public boolean canProcessDocument(DocumentModel doc) {
+
+		boolean hasNLFacet = doc.hasFacet(NaturalLanguage.FACET_NAME);
+
+		// Does the doc has a facet telling us it must be ignored?
+		List<String> excludedFacets = getAnalyzeExcludedFacets();
+		if (excludedFacets != null && excludedFacets.size() > 0) {
+			Set<String> docFacets = doc.getFacets();
+			for (String facet : excludedFacets) {
+				if (docFacets.contains(facet)) {
+					// Handling facet dynamically added. Maybe the doc did not
+					// originally have the facet, Natural Language was processed
+					// => caller should remove it
+					if (hasNLFacet) {
+						return true;
+					}
+					return false;
+				}
+			}
+		}
+
+		// Does the doc has a type telling us it must be ignored?
+		List<String> excludedDocTypes = getAnalyzeExcludedDocTypes();
+		if (excludedDocTypes != null && excludedDocTypes.size() > 0) {
+			if (excludedDocTypes.indexOf(doc.getType()) > -1) {
+				return false;
+			}
+		}
+
+		// Do we have blob? yes/No, do we already have the facet?
+		Blob blob = null;
+		if (doc.hasSchema("file")) {
+			blob = (Blob) doc.getPropertyValue("file:content");
+		}
+		if (blob == null && !hasNLFacet) {
+			return false;
+		}
+
+		// So we have a blob, let's check if it was already processed
+		if (blob != null && hasNLFacet) {
+			String sourceDigest = (String) doc.getPropertyValue(NaturalLanguage.XPATH_SOURCE_DIGEST);
+			if (sourceDigest != null && blob.getDigest().equals(sourceDigest)) {
+				return false;
+			}
+		}
+
+		// Ok, looks like we _really_ want to process this document after all
+		return true;
 	}
 
 }

@@ -28,6 +28,7 @@ bin/
 *~bak
 *-bak
 *.bak
+nashorn_code_cache
 
 #specific to nuxeo-natural-language
 natural-language-test.conf

@@ -41,6 +41,8 @@ public class NaturalLanguageTokenImpl implements NaturalLanguageToken {
 
 	protected String lemma;
 
+	protected String number;
+
 	protected String gender;
 
 	protected String mood;
@@ -55,12 +57,13 @@ public class NaturalLanguageTokenImpl implements NaturalLanguageToken {
 
 	protected String kase;
 
-	public NaturalLanguageTokenImpl(String text, int beginOffset, String tag, String lemma, String gender, String mood,
+	public NaturalLanguageTokenImpl(String text, int beginOffset, String tag, String lemma, String number, String gender, String mood,
 			String person, String proper, String form, String aspect, String theCase) {
 		this.text = text;
 		this.beginOffset = beginOffset;
 		this.tag = tag;
 		this.lemma = lemma;
+		this.number = number;
 		this.gender = gender;
 		this.mood = mood;
 		this.person = person;
@@ -123,6 +126,11 @@ public class NaturalLanguageTokenImpl implements NaturalLanguageToken {
 	@Override
 	public String getLemma() {
 		return lemma;
+	}
+
+	@Override
+	public String getNumber() {
+		return number;
 	}
 
 	@Override

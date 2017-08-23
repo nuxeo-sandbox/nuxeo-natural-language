@@ -181,7 +181,7 @@ public interface NaturalLanguage {
 	 * has facet that is in the list of excludedFactes. If yes, return
 	 * <code>false</code>, else return <code>true</code>
 	 *
-	 * Notice the implem,tatiuon can follow another logic and add more
+	 * Notice the implementation can follow another logic and add more
 	 * conditions
 	 *
 	 * @param doc

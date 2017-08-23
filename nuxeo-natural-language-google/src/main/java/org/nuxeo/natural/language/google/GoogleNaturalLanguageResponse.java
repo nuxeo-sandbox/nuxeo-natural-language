@@ -187,6 +187,7 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 					String lemma = googleToken.getLemma();
 
 					PartOfSpeech partOfSpeech = googleToken.getPartOfSpeech();
+					String number = partOfSpeech.getNumber().name();
 					String tagName = partOfSpeech.getTag().name();
 					String gender = partOfSpeech.getGender().name();
 					String mood = partOfSpeech.getMood().name();
@@ -196,8 +197,8 @@ public class GoogleNaturalLanguageResponse implements NaturalLanguageResponse {
 					String aspect = partOfSpeech.getAspect().name();
 					String theCase = partOfSpeech.getCase().name();
 
-					token = new NaturalLanguageTokenImpl(text, beginOffset, tagName, lemma, gender, mood, person,
-							proper, form, aspect, theCase);
+					token = new NaturalLanguageTokenImpl(text, beginOffset, tagName, lemma, number, gender, mood,
+							person, proper, form, aspect, theCase);
 					tokens.add(token);
 
 				}

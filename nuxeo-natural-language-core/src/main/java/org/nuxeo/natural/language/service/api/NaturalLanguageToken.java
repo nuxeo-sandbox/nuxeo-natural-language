@@ -231,6 +231,21 @@ public interface NaturalLanguageToken {
 	public String getLemma();
 
 	/**
+	 * Count distinctions.
+	 *
+	 * <pre>
+	 * NUMBER_UNKNOWN
+	 * SINGULAR
+	 * PLURAL
+	 * DUAL
+	 * UNRECOGNIZED
+	 * </pre>
+	 *
+	 * @return value or {@code null} for none
+	 */
+	public String getNumber();
+
+	/**
 	 *
 	 * @return the JSON representation of the sentence
 	 * @throws JSONException

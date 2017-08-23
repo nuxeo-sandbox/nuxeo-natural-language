@@ -28,6 +28,8 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -61,6 +63,28 @@ public class NaturalLanguageImpl extends DefaultComponent implements NaturalLang
 	protected NaturalLanguageDescriptor config = null;
 
 	protected Map<String, NaturalLanguageProvider> providers = new HashMap<>();
+
+	protected Boolean documentListenerEnabled = null;
+
+	@Override
+	public JSONObject getServiceConfiguration(DocumentModel doc) {
+
+		JSONObject obj = new JSONObject();
+
+		try {
+
+			obj.put("listenerEnabled", isDocumentListenerEnabled());
+			obj.put("defaultProcessingChainName", getDefaultDocumentProcessingChainName());
+			obj.put("excludedFacets", getAnalyzeExcludedFacets());
+			obj.put("excludedDocTypes", getAnalyzeExcludedDocTypes());
+			obj.put("canProcessDocument", doc == null ? false : canProcessDocument(doc));
+
+		} catch (JSONException e) {
+			// Ignore the error
+		}
+
+		return obj;
+	}
 
 	/**
 	 * Component activated notification. Called when the component is activated.
@@ -215,8 +239,16 @@ public class NaturalLanguageImpl extends DefaultComponent implements NaturalLang
 	}
 
 	@Override
-	public boolean isAutoAnalyze() {
-		return config.isAutoAnalyze();
+	public boolean isDocumentListenerEnabled() {
+		if (documentListenerEnabled == null) {
+			documentListenerEnabled = config.isDocumentListenerEnabled();
+		}
+		return documentListenerEnabled;
+	}
+
+	@Override
+	public void setDocumentListenerEnabled(boolean value) {
+		documentListenerEnabled = value;
 	}
 
 	@Override

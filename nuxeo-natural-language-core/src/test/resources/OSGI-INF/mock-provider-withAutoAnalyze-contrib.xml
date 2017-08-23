@@ -6,7 +6,7 @@
   <extension target="org.nuxeo.natural.language.service" point="configuration">
     <configuration>
       <defaultProviderName>mock</defaultProviderName>
-      <autoAnalyze>true</autoAnalyze>
+      <enableDocumentListener>true</enableDocumentListener>
       <doNotAnalyzeIf>
         <facet>Picture</facet>
         <facet>Video</facet>

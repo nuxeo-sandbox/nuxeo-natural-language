@@ -60,7 +60,7 @@ public class NaturalLanguageOnStringOp {
 	@Param(name = "features", description = "A StringList of features to request from the API", required = true)
 	protected StringList features;
 
-	@Param(name = "encoding", description = "The encoding of the input. UTF8, UTF16 or UTF32 (or not passed)", required = true)
+	@Param(name = "encoding", description = "The encoding of the input. UTF8, UTF16 or UTF32 (or not passed)", required = false)
 	protected String encoding;
 
 	@Param(name = "outputVariable", description = "The key of the context output variable. "

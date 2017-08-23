@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -48,6 +49,13 @@ public interface NaturalLanguage {
 	public static final String XPATH_SOURCE_DIGEST = "natural_language:source_digest";
 
 	public static final String EVENT_DOCUMENT_HANDLED = "naturalLanguageDocumentHandled";
+
+	/**
+	 *
+	 * @return Returns a JSON object of the service configuration. If doc is
+	 *         null, canProcessDocument is returned as false
+	 */
+	JSONObject getServiceConfiguration(DocumentModel doc);
 
 	/**
 	 * Send the text to the provider.
@@ -138,7 +146,15 @@ public interface NaturalLanguage {
 	 *
 	 * @return true if documents must be analyze in a listener automatically
 	 */
-	boolean isAutoAnalyze();
+	boolean isDocumentListenerEnabled();
+
+	/**
+	 * Set the activation of the listener.
+	 *
+	 * Setting the value to false has no impact on running listeners
+	 *
+	 */
+	void setDocumentListenerEnabled(boolean value);
 
 	/**
 	 *

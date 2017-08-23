@@ -4,5 +4,6 @@
     <operation class="org.nuxeo.natural.language.operations.NaturalLanguageOnBlobOp" />
     <operation class="org.nuxeo.natural.language.operations.NaturalLanguageOnDocumentOp" />
     <operation class="org.nuxeo.natural.language.operations.NaturalLanguageOnStringOp" />
+    <operation class="org.nuxeo.natural.language.operations.NaturalLanguageServiceInfoOp" />
   </extension>
 </component>

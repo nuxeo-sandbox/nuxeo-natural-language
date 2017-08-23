@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
@@ -66,6 +68,33 @@ public class TestNaturalLanguageService {
 	protected NaturalLanguage naturalLanguage;
 
 	@Test
+	public void testConfiguration() throws JSONException {
+		// Checking mock-provider-contrib.xml values
+
+		assertFalse(naturalLanguage.isDocumentListenerEnabled());
+
+		assertEquals(NaturalLanguage.DEFAULT_PROCESSING_CHAIN, naturalLanguage.getDefaultDocumentProcessingChainName());
+
+		// We don't have doc types in the mock xml config. service
+		List<String> excludedDocTypes = naturalLanguage.getAnalyzeExcludedDocTypes();
+		assertTrue(excludedDocTypes == null || excludedDocTypes.size() == 0);
+
+		List<String> excludedFacets = naturalLanguage.getAnalyzeExcludedFacets();
+		assertTrue(excludedFacets != null && excludedFacets.size() == 3);
+		assertTrue(excludedFacets.indexOf("Picture") > -1);
+		assertTrue(excludedFacets.indexOf("Video") > -1);
+		assertTrue(excludedFacets.indexOf("Audio") > -1);
+
+		// Checking the JSON config
+		JSONObject obj = naturalLanguage.getServiceConfiguration(null);
+		assertNotNull(obj);
+		assertFalse(obj.getBoolean("listenerEnabled"));
+		assertEquals(NaturalLanguage.DEFAULT_PROCESSING_CHAIN, obj.getString("defaultProcessingChainName"));
+		assertFalse(obj.getBoolean("canProcessDocument"));
+
+	}
+
+	@Test
 	public void testNamedProvider() throws IllegalStateException, IOException, GeneralSecurityException {
 
 		NaturalLanguageProvider provider = naturalLanguage.getProvider(MockNaturalLanguageProvider.NAME);
@@ -102,16 +131,10 @@ public class TestNaturalLanguageService {
 
 	}
 
-	@Test
-	public void testDefaultAutoAnalyze() {
-		assertFalse(naturalLanguage.isAutoAnalyze());
-	}
-
-	@Test
-	public void testFacetAndSchema() {
+	protected DocumentModel createTestDocAndWaitForAsyncCompletion() {
 
 		DocumentModel doc = coreSession.createDocumentModel("/", "test-doc", "File");
-		doc.setPropertyValue("dc:title", "tes-doc");
+		doc.setPropertyValue("dc:title", "test-doc");
 		doc = coreSession.createDocument(doc);
 
 		coreSession.save();
@@ -120,27 +143,25 @@ public class TestNaturalLanguageService {
 
 		eventService.waitForAsyncCompletion();
 
+		// ========================================
+		// The listener is asynchronous => need to refresh our instance
+		// ========================================
+		doc.refresh();
+
+		return doc;
+	}
+
+	@Test
+	public void testFacetAndSchema() {
+
+		DocumentModel doc = createTestDocAndWaitForAsyncCompletion();
+
 		assertFalse(doc.hasFacet(NaturalLanguage.FACET_NAME));
 		boolean ok = doc.addFacet(NaturalLanguage.FACET_NAME);
 		assertTrue(ok);
 
 		assertTrue(doc.hasFacet(NaturalLanguage.FACET_NAME));
 		assertTrue(doc.hasSchema(NaturalLanguage.SCHEMA_NAME));
-
-	}
-
-	@Test
-	public void testAutoAnalyzeConfig() {
-
-		// We don't have doc types in the mock xml config. service
-		List<String> excludedDocTypes = naturalLanguage.getAnalyzeExcludedDocTypes();
-		assertTrue(excludedDocTypes == null || excludedDocTypes.size() == 0);
-
-		List<String> excludedFacets = naturalLanguage.getAnalyzeExcludedFacets();
-		assertTrue(excludedFacets != null && excludedFacets.size() == 3);
-		assertTrue(excludedFacets.indexOf("Picture") > -1);
-		assertTrue(excludedFacets.indexOf("Video") > -1);
-		assertTrue(excludedFacets.indexOf("Audio") > -1);
 
 	}
 

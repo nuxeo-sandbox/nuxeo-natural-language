@@ -35,8 +35,8 @@ public class NaturalLanguageDescriptor {
 	@XNode("defaultDocumentProcessingChainName")
 	protected String defaultDocumentProcessingChainName = NaturalLanguage.DEFAULT_PROCESSING_CHAIN;
 
-	@XNode("autoAnalyze")
-	protected Boolean autoAnalyze = false;
+	@XNode("enableDocumentListener")
+	protected Boolean enableDocumentListener = false;
 
 	@XNodeList(value = "doNotAnalyzeIf/facet", type = ArrayList.class, componentType = String.class)
 	protected ArrayList<String> autoAnalyzeExcludedFacets;
@@ -51,12 +51,12 @@ public class NaturalLanguageDescriptor {
 		return defaultProviderName;
 	}
 
-	public String getDefaultDocumentProcessingChainName() {
-		return defaultDocumentProcessingChainName;
+	public boolean isDocumentListenerEnabled() {
+		return enableDocumentListener;
 	}
 
-	public boolean isAutoAnalyze() {
-		return autoAnalyze;
+	public String getDefaultDocumentProcessingChainName() {
+		return defaultDocumentProcessingChainName;
 	}
 
 	public ArrayList<String> getAnalyzeExcludedFacets() {

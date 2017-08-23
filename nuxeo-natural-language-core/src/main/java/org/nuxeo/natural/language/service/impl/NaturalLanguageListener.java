@@ -44,8 +44,13 @@ public class NaturalLanguageListener implements PostCommitEventListener {
 
 	private static final Log log = LogFactory.getLog(NaturalLanguageListener.class);
 
+	protected NaturalLanguage naturalLanguageService;
+
 	@Override
 	public void handleEvent(EventBundle events) {
+
+		naturalLanguageService = Framework.getService(NaturalLanguage.class);
+
 		for (Event event : events) {
 			handleEvent(event);
 		}
@@ -53,8 +58,7 @@ public class NaturalLanguageListener implements PostCommitEventListener {
 
 	protected void handleEvent(Event event) {
 
-		NaturalLanguage naturalLanguageService = Framework.getService(NaturalLanguage.class);
-		if (naturalLanguageService == null || !naturalLanguageService.isAutoAnalyze()) {
+		if (naturalLanguageService == null || !naturalLanguageService.isDocumentListenerEnabled()) {
 			return;
 		}
 

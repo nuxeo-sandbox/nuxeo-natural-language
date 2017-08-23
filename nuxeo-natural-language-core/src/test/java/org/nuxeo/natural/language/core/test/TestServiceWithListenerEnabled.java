@@ -53,7 +53,7 @@ import com.google.inject.Inject;
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy("nuxeo-natural-language-core")
 @LocalDeploy({ "nuxeo-natural-language:OSGI-INF/mock-provider-withAutoAnalyze-contrib.xml" })
-public class TestServiceWithAutoAnalyzeDoc {
+public class TestServiceWithListenerEnabled {
 
 	protected String TEXT_FILE = "status_quo.txt";
 
@@ -69,11 +69,38 @@ public class TestServiceWithAutoAnalyzeDoc {
 	@Inject
 	protected NaturalLanguage naturalLanguage;
 
-	@Test
-	public void testAutoAnalyzeConfig() {
+	protected DocumentModel createTestDocAndWaitForAsyncCompletion(String title) {
 
-		// IN this deployed config, the defaultAnalyze is set to true
-		assertTrue(naturalLanguage.isAutoAnalyze());
+		File file = FileUtils.getResourceFileFromContext(TEXT_FILE);
+		FileBlob fileBlob = new FileBlob(file);
+		fileBlob.setFilename(file.getName());
+		fileBlob.setMimeType("text/plain");
+
+		DocumentModel doc = coreSession.createDocumentModel("/", title, "File");
+		doc.setPropertyValue("dc:title", title);
+		doc.setPropertyValue("file:content", fileBlob);
+		doc = coreSession.createDocument(doc);
+
+		coreSession.save();
+		TransactionHelper.commitOrRollbackTransaction();
+		TransactionHelper.startTransaction();
+
+		eventService.waitForAsyncCompletion();
+
+		// ========================================
+		// The listener is asynchronous => need to refresh our instance
+		// ========================================
+		doc.refresh();
+
+		return doc;
+	}
+
+	@Test
+	public void testConfig() {
+		// Check against the mock-provider-withAutoAnalyze-contrib.xml file
+
+		// In this deployed config, the defaultAnalyze is set to true
+		assertTrue(naturalLanguage.isDocumentListenerEnabled());
 
 		// We don't have doc types in the mock xml config. service
 		List<String> excludedDocTypes = naturalLanguage.getAnalyzeExcludedDocTypes();
@@ -90,24 +117,7 @@ public class TestServiceWithAutoAnalyzeDoc {
 	@Test
 	public void testDocumentIsAnalyzed() throws JSONException {
 
-		File file = FileUtils.getResourceFileFromContext(TEXT_FILE);
-		FileBlob fileBlob = new FileBlob(file);
-		fileBlob.setFilename(file.getName());
-		fileBlob.setMimeType("text/plain");
-
-		DocumentModel doc = coreSession.createDocumentModel("/", "test-doc", "File");
-		doc.setPropertyValue("dc:title", "tes-doc");
-		doc.setPropertyValue("file:content", fileBlob);
-		doc = coreSession.createDocument(doc);
-
-		coreSession.save();
-		TransactionHelper.commitOrRollbackTransaction();
-		TransactionHelper.startTransaction();
-
-		eventService.waitForAsyncCompletion();
-
-		// The listener is asynchronous => need to refresh our instance
-		doc.refresh();
+		DocumentModel doc = createTestDocAndWaitForAsyncCompletion("test-doc");
 
 		assertTrue(doc.hasFacet(NaturalLanguage.FACET_NAME));
 		assertTrue(doc.hasSchema(NaturalLanguage.SCHEMA_NAME));
@@ -127,6 +137,25 @@ public class TestServiceWithAutoAnalyzeDoc {
 		Blob blob = (Blob) doc.getPropertyValue("file:content");
 		assertEquals(blob.getDigest(), doc.getPropertyValue(NaturalLanguage.XPATH_SOURCE_DIGEST));
 		// (but this has been tested in canProcessDocument()
+
+	}
+
+	@Test
+	public void testEnableDisableListener() {
+
+		assertTrue(naturalLanguage.isDocumentListenerEnabled());
+
+		// Create a doc and check it has the facet/schema
+		DocumentModel doc1 = createTestDocAndWaitForAsyncCompletion("test-doc-1");
+		assertTrue(doc1.hasFacet(NaturalLanguage.FACET_NAME));
+		assertTrue(doc1.hasSchema(NaturalLanguage.SCHEMA_NAME));
+
+		// Disable the service then create another doc and test it does not have
+		// the facet/schema
+		naturalLanguage.setDocumentListenerEnabled(false);
+		DocumentModel doc2 = createTestDocAndWaitForAsyncCompletion("test-doc-2");
+		assertFalse(doc2.hasFacet(NaturalLanguage.FACET_NAME));
+		assertFalse(doc2.hasSchema(NaturalLanguage.SCHEMA_NAME));
 
 	}
 

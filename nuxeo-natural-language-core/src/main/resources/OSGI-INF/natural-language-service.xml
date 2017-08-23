@@ -23,10 +23,14 @@
 
   <extension target="org.nuxeo.natural.language.service" point="configuration">
     <configuration>
+      <enabled>true</enabled>
       <defaultProviderName>${org.nuxeo.natural.language.default.provider:=}</defaultProviderName>
+
+      <!-- Configuraiton of the listener and analyzis of documents in event handlers -->
       <defaultDocumentProcessingChainName>javascript.NaturalLanguageDefaultDocumentProcessing
+      <!-- Default value is false -->
+      <enableDocumentListener>${org.nuxeo.natural.language.enableDocumentListener:=}</enableDocumentListener>
       </defaultDocumentProcessingChainName>
-      <autoAnalyze>${org.nuxeo.natural.language.autoanalyze:=}</autoAnalyze>
       <doNotAnalyzeIf>
         <facet>Picture</facet>
         <facet>Video</facet>

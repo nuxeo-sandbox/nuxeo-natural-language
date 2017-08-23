@@ -17,9 +17,7 @@ function run(input, params) {
   var blob, response, ok;
   
   blob = input["file:content"];
-  
-  Console.log("COUCOU");
-  
+    
   // So. We assume the caller has check the document is not in the exlucedDocTypes
   // and does not have a facet in the exludedFacets (see the service XML declaration)
   
@@ -30,18 +28,14 @@ function run(input, params) {
     }
     return input;
   }
-  
-  Console.log("KIKI");
-  
+    
   // So, the blob is not null. Let's check if we have the schema and if
   // the Natural Language has been processed on the exact same blob already
   if(input.hasSchema("NaturalLanguage") && input["natural_language:source_digest"] === blob.getDigest()) {
     // No need to recompute
     return input;
   }
-  
-  Console.log("KOKO");
-  
+    
   ok = false;
   try {
     // No choice but compute the thing :-)
@@ -56,81 +50,24 @@ function run(input, params) {
   } catch(error) {
     Console.log("\nError when calling the Natural Language API:\n" + error);
   }
-  
-  Console.log("LILI");
-  
-  if(ok) {    
-    Console.log("LALA");
-  
+    
+  if(ok) {      
     response = ctx.response;
     
     if(!input.hasFacet("NaturalLanguage")) {
       // "save" parameter available only starting with FT 9.3. Will be ignored with previous
       // versions (and the document is then always saved during this call)
-      Console.log("LULU");
       input = Document.AddFacet(input, {'facet': "NaturalLanguage", "save": false});
-      Console.log("LYLY");
     }
     
-    Console.log("POPO");
     input["natural_language:json"] = "" + response.toJSON();
-    Console.log("PIPI");
     input["natural_language:source_digest"] = blob.getDigest();
-    Console.log("PUPU");
     input = Document.Save(input, {});
-    Console.log("DONE");
   }
   
   return input;
 }
 ]]></script>
-    </scriptedOperation>
-
-    <scriptedOperation id="javascript.VideoVisionDefaultMapper">
-      <inputType>Document</inputType>
-      <outputType>Document</outputType>
-      <category>javascript</category>
-      <description></description>
-      <script><![CDATA[function run(input, params) {
-              var storyboard = input['vid:storyboard'];
-              var blobs = [];
-              var index;
-              var tags = [];
-
-              for (index=0;index<storyboard.length;index++) {
-
-                var blob = storyboard[index].content;
-
-                VisionOp(blob, {
-                  'features': ['LABEL_DETECTION'],
-                  'maxResults': 5,
-                  'outputVariable': 'annotations'
-                });
-
-                var annotations = ctx.annotations;
-
-                if (annotations===undefined || annotations.length===0) return;
-
-                // build tag list
-                var textAndLabels = annotations[0];
-                var labels = textAndLabels.getClassificationLabels();
-
-                if (labels === undefined || labels === null || labels===0) continue;
-
-                for(var j=0;j<labels.length;j++) {
-                    var label = labels[j];
-                    var tag = label.getText();
-                    if (tag ===undefined || tag ===null) continue;
-                    tags.push(tag.replace(/[^A-Z0-9]+/ig,'+'));
-                    tags.push(label.getText().replace(/\s/g,'+'));
-                }
-              }
-
-              input = Services.TagDocument(input, {'tags': tags });
-
-              return input;
-
-            }]]></script>
     </scriptedOperation>
   </extension>
 </component>

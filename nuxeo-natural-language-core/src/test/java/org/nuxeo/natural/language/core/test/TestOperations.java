@@ -21,6 +21,7 @@ package org.nuxeo.natural.language.core.test;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +35,7 @@ import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -42,6 +44,8 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.natural.language.core.test.mock.MockNaturalLanguageResponse;
+import org.nuxeo.natural.language.operations.NaturalLanguageOnBlobOp;
+import org.nuxeo.natural.language.operations.NaturalLanguageOnDocumentOp;
 import org.nuxeo.natural.language.operations.NaturalLanguageOnStringOp;
 import org.nuxeo.natural.language.operations.NaturalLanguageServiceInfoOp;
 import org.nuxeo.natural.language.service.api.NaturalLanguage;
@@ -76,16 +80,23 @@ public class TestOperations {
 	@Inject
 	protected NaturalLanguage naturalLanguage;
 
-	protected DocumentModel createTestDocAndWaitForAsyncCompletion(String title) {
+	protected Blob createTestFileBlob() {
 
 		File file = FileUtils.getResourceFileFromContext(TEXT_FILE);
 		FileBlob fileBlob = new FileBlob(file);
 		fileBlob.setFilename(file.getName());
 		fileBlob.setMimeType("text/plain");
 
+		return fileBlob;
+	}
+
+	protected DocumentModel createTestDocAndWaitForAsyncCompletion(String title) {
+
+		Blob blob = createTestFileBlob();
+
 		DocumentModel doc = coreSession.createDocumentModel("/", title, "File");
 		doc.setPropertyValue("dc:title", title);
-		doc.setPropertyValue("file:content", fileBlob);
+		doc.setPropertyValue("file:content", (Serializable) blob);
 		doc = coreSession.createDocument(doc);
 
 		coreSession.save();
@@ -152,6 +163,60 @@ public class TestOperations {
 		String result = (String) automationService.run(ctx, chain);
 		assertEquals(result, inputStr);
 
+		// (Result as returned by the mock provider)
+		NaturalLanguageResponse response = (NaturalLanguageResponse) ctx.get("result");
+		assertNotNull(response);
+		assertEquals(MockNaturalLanguageResponse.LANGUAGE, response.getLanguage());
+
+	}
+
+	@Test
+	public void testProcessBlobOperation() throws OperationException, JSONException {
+
+		OperationContext ctx = new OperationContext(coreSession);
+
+		Blob blob = createTestFileBlob();
+		ctx.setInput(blob);
+		ctx.setCoreSession(coreSession);
+		OperationChain chain = new OperationChain("testProcessBlobOperation");
+		String featuresStr = Arrays.asList(NaturalLanguageFeature.values()).toString();
+		featuresStr = StringUtils.remove(featuresStr, '[');
+		featuresStr = StringUtils.remove(featuresStr, ']');
+		chain.add(NaturalLanguageOnBlobOp.ID).set("features", featuresStr).set("outputVariable", "result");
+
+		// This operation returns the blob unchanged
+		Blob result = (Blob) automationService.run(ctx, chain);
+		assertEquals(blob.getDigest(), result.getDigest());
+		assertEquals(blob.getFilename(), result.getFilename());
+		assertEquals(blob.getMimeType(), result.getMimeType());
+		assertEquals(blob.getLength(), result.getLength());
+
+		// (Result as returned by the mock provider)
+		NaturalLanguageResponse response = (NaturalLanguageResponse) ctx.get("result");
+		assertNotNull(response);
+		assertEquals(MockNaturalLanguageResponse.LANGUAGE, response.getLanguage());
+
+	}
+
+	@Test
+	public void testProcessDocumentOperation() throws OperationException, JSONException {
+
+		OperationContext ctx = new OperationContext(coreSession);
+
+		DocumentModel doc = createTestDocAndWaitForAsyncCompletion("testdoc1");
+		ctx.setInput(doc);
+		ctx.setCoreSession(coreSession);
+		OperationChain chain = new OperationChain("testProcessDocumentOperation");
+		String featuresStr = Arrays.asList(NaturalLanguageFeature.values()).toString();
+		featuresStr = StringUtils.remove(featuresStr, '[');
+		featuresStr = StringUtils.remove(featuresStr, ']');
+		chain.add(NaturalLanguageOnDocumentOp.ID).set("features", featuresStr).set("outputVariable", "result");
+
+		// This operation returns the document unchanged
+		DocumentModel result = (DocumentModel) automationService.run(ctx, chain);
+		assertEquals(doc.getChangeToken(), result.getChangeToken());
+
+		// (Result as returned by the mock provider)
 		NaturalLanguageResponse response = (NaturalLanguageResponse) ctx.get("result");
 		assertNotNull(response);
 		assertEquals(MockNaturalLanguageResponse.LANGUAGE, response.getLanguage());

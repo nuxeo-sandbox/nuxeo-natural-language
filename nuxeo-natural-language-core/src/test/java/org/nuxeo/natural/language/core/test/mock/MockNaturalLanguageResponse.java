@@ -28,6 +28,7 @@ import org.nuxeo.natural.language.service.api.NaturalLanguageSentence;
 import org.nuxeo.natural.language.service.api.NaturalLanguageToken;
 
 /**
+ * A NaturalLanguageResponse mock-up returning hard coded values
  *
  * @since 9.2
  */

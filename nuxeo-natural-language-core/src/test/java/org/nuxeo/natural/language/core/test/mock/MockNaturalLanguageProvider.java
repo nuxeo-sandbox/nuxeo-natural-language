@@ -29,6 +29,10 @@ import org.nuxeo.natural.language.service.api.NaturalLanguageProvider;
 import org.nuxeo.natural.language.service.api.NaturalLanguageResponse;
 
 /**
+ * A NaturalLanguageProvider mock-up. Does not connect to anything, returns hard
+ * coded values (see {@code MockNaturalLanguageResponse}
+ *
+ * Configured in /src/test/resources/OSGI-INF/mock-provider-contrib.xml
  *
  * @since 9.2
  */

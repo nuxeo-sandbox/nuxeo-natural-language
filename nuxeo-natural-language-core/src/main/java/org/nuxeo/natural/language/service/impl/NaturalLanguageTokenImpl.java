@@ -57,8 +57,8 @@ public class NaturalLanguageTokenImpl implements NaturalLanguageToken {
 
 	protected String kase;
 
-	public NaturalLanguageTokenImpl(String text, int beginOffset, String tag, String lemma, String number, String gender, String mood,
-			String person, String proper, String form, String aspect, String theCase) {
+	public NaturalLanguageTokenImpl(String text, int beginOffset, String tag, String lemma, String number,
+			String gender, String mood, String person, String proper, String form, String aspect, String theCase) {
 		this.text = text;
 		this.beginOffset = beginOffset;
 		this.tag = tag;
@@ -136,8 +136,8 @@ public class NaturalLanguageTokenImpl implements NaturalLanguageToken {
 	@Override
 	public String toString() {
 		return "Text:\n" + text + "\n\nBeginOffset\n" + beginOffset + "\n\nTag\n" + tag + "\n\nLemma\n" + lemma
-				+ "\n\nGender\n" + gender + "\n\nmMood\n" + mood + "\n\nPerson\n" + person + "\n\nProper\n" + proper
-				+ "\n\nForm\n" + form + "\n\nAspect\n" + aspect + "\n\nCase\n" + kase + "\n";
+				+ "\n\nNumber\n" + number + "\n\nGender\n" + gender + "\n\nmMood\n" + mood + "\n\nPerson\n" + person
+				+ "\n\nProper\n" + proper + "\n\nForm\n" + form + "\n\nAspect\n" + aspect + "\n\nCase\n" + kase + "\n";
 	}
 
 	@Override
@@ -149,6 +149,7 @@ public class NaturalLanguageTokenImpl implements NaturalLanguageToken {
 		obj.put("beginOffset", beginOffset);
 		obj.put("tag", tag);
 		obj.put("lemma", lemma);
+		obj.put("number", number);
 		obj.put("gender", gender);
 		obj.put("mood", mood);
 		obj.put("person", person);

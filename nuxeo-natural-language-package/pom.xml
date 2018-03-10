@@ -3,7 +3,7 @@
   <parent>
     <groupId>nuxeo.natural.language</groupId>
     <artifactId>nuxeo-natural-language-parent</artifactId>
-    <version>9.2-SNAPSHOT</version>
+    <version>9.10-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
